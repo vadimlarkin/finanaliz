@@ -1,0 +1,227 @@
+{
+  "schema_version": "1.0",
+  "company": {
+    "name": "ООО «Учебный портфель»",
+    "business_model": "financial_intermediary",
+    "fictional": true
+  },
+  "assessment_date": "2026-01-15",
+  "balance_date": "2025-12-31",
+  "period": {
+    "start": "2025-01-01",
+    "end": "2025-12-31"
+  },
+  "currency": "RUB",
+  "facts": {
+    "interest_expense": {
+      "value": 8000000,
+      "status": "confirmed",
+      "sources": [
+        "S1"
+      ],
+      "period_start": "2025-01-01",
+      "period_end": "2025-12-31"
+    },
+    "operating_cashflow": {
+      "value": 18000000,
+      "status": "confirmed",
+      "sources": [
+        "S1"
+      ],
+      "period_start": "2025-01-01",
+      "period_end": "2025-12-31"
+    },
+    "cash_interest_paid": {
+      "value": 8000000,
+      "status": "confirmed",
+      "sources": [
+        "S1"
+      ],
+      "period_start": "2025-01-01",
+      "period_end": "2025-12-31"
+    },
+    "interest_paid_in_cfo": {
+      "value": 8000000,
+      "status": "confirmed",
+      "sources": [
+        "S1"
+      ],
+      "period_start": "2025-01-01",
+      "period_end": "2025-12-31"
+    },
+    "principal_paid": {
+      "value": 10000000,
+      "status": "confirmed",
+      "sources": [
+        "S1"
+      ],
+      "period_start": "2025-01-01",
+      "period_end": "2025-12-31"
+    },
+    "interest_bearing_debt": {
+      "value": 60000000,
+      "status": "confirmed",
+      "sources": [
+        "S1"
+      ],
+      "as_of": "2025-12-31"
+    },
+    "equity": {
+      "value": 60000000,
+      "status": "confirmed",
+      "sources": [
+        "S1"
+      ],
+      "as_of": "2025-12-31"
+    },
+    "current_assets": {
+      "value": 90000000,
+      "status": "confirmed",
+      "sources": [
+        "S1"
+      ],
+      "as_of": "2025-12-31"
+    },
+    "current_liabilities": {
+      "value": 45000000,
+      "status": "confirmed",
+      "sources": [
+        "S1"
+      ],
+      "as_of": "2025-12-31"
+    },
+    "unrestricted_cash": {
+      "value": 15000000,
+      "status": "confirmed",
+      "sources": [
+        "S3"
+      ],
+      "as_of": "2026-01-15"
+    },
+    "receipts_90d": {
+      "value": 40000000,
+      "status": "confirmed",
+      "sources": [
+        "S3"
+      ],
+      "forecast_as_of": "2026-01-15"
+    },
+    "operating_payments_90d": {
+      "value": 30000000,
+      "status": "confirmed",
+      "sources": [
+        "S3"
+      ],
+      "forecast_as_of": "2026-01-15"
+    },
+    "capex_90d": {
+      "value": 5000000,
+      "status": "confirmed",
+      "sources": [
+        "S3"
+      ],
+      "forecast_as_of": "2026-01-15"
+    },
+    "debt_service_90d": {
+      "value": 8000000,
+      "status": "confirmed",
+      "sources": [
+        "S3"
+      ],
+      "forecast_as_of": "2026-01-15"
+    },
+    "new_loan_amount": {
+      "value": 10000000,
+      "status": "confirmed",
+      "sources": [
+        "S2"
+      ]
+    },
+    "new_loan_rate_pct": {
+      "value": 24,
+      "status": "confirmed",
+      "sources": [
+        "S2"
+      ]
+    },
+    "new_loan_term_months": {
+      "value": 12,
+      "status": "confirmed",
+      "sources": [
+        "S2"
+      ]
+    },
+    "new_loan_fees_12m": {
+      "value": 0,
+      "status": "confirmed",
+      "sources": [
+        "S2"
+      ]
+    },
+    "profit_before_tax": {
+      "value": 4000000,
+      "status": "confirmed",
+      "sources": [
+        "S4"
+      ],
+      "period_start": "2025-01-01",
+      "period_end": "2025-12-31"
+    },
+    "one_off_net_income": {
+      "value": 0,
+      "status": "confirmed",
+      "sources": [
+        "S4"
+      ],
+      "period_start": "2025-01-01",
+      "period_end": "2025-12-31"
+    },
+    "portfolio_net_cashflow": {
+      "value": -6000000,
+      "status": "confirmed",
+      "sources": [
+        "S4"
+      ],
+      "period_start": "2025-01-01",
+      "period_end": "2025-12-31"
+    }
+  },
+  "sources": [
+    {
+      "id": "S1",
+      "file": "synthetic-statements.md",
+      "locator": "Колонка обычного бизнеса, 2025 год"
+    },
+    {
+      "id": "S2",
+      "file": "synthetic-loan.md",
+      "locator": "Условия учебного займа"
+    },
+    {
+      "id": "S3",
+      "file": "synthetic-calendar.md",
+      "locator": "План и свободные деньги на 15.01.2026"
+    },
+    {
+      "id": "S4",
+      "file": "synthetic-intermediary.md",
+      "locator": "Результат и поправка портфеля"
+    }
+  ],
+  "loan_repayment": "bullet",
+  "loan_interest_basis": "simple_monthly",
+  "stress": {
+    "earnings_drop_pct": 20
+  },
+  "context": {
+    "observations": [
+      "Доходность портфеля не равна денежным сборам; проверьте качество требований.",
+      "Структура фондирования требует отраслевого сопоставления."
+    ],
+    "questions": [
+      "Чем подтверждён источник возврата основной суммы займа?",
+      "Как изменятся поступления при задержке оплаты покупателями?"
+    ],
+    "limitations": []
+  }
+}

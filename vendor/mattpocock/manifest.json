@@ -1,0 +1,250 @@
+{
+  "repository": "https://github.com/mattpocock/skills",
+  "revision": "5beb35b040e3de97e54fa9e386d7e42d15c295c2",
+  "installedAt": "2026-10-19",
+  "method": "project-local copies; AGENTS.md routing",
+  "skills": [
+    "writing-for-agents",
+    "grilling",
+    "grill-with-docs",
+    "domain-modeling",
+    "to-spec",
+    "to-tickets",
+    "tdd",
+    "diagnosing-bugs",
+    "codebase-design",
+    "handoff",
+    "setup-matt-pocock-skills",
+    "code-review"
+  ],
+  "files": [
+    {
+      "path": "vendor/mattpocock/skills/codebase-design/DEEPENING.md",
+      "sourcePath": "skills/engineering/codebase-design/DEEPENING.md",
+      "gitBlobSha": "cd94075cfd754d147555c5d747a16431ed4c7dd8",
+      "mode": "100644"
+    },
+    {
+      "path": "vendor/mattpocock/skills/codebase-design/DESIGN-IT-TWICE.md",
+      "sourcePath": "skills/engineering/codebase-design/DESIGN-IT-TWICE.md",
+      "gitBlobSha": "d0990138c35c800bd821289a73115e52680c1620",
+      "mode": "100644"
+    },
+    {
+      "path": "vendor/mattpocock/skills/codebase-design/SKILL.md",
+      "sourcePath": "skills/engineering/codebase-design/SKILL.md",
+      "gitBlobSha": "3f63c8146dd2604b419c929e9876b90c30d410e9",
+      "mode": "100644"
+    },
+    {
+      "path": "vendor/mattpocock/skills/codebase-design/agents/openai.yaml",
+      "sourcePath": "skills/engineering/codebase-design/agents/openai.yaml",
+      "gitBlobSha": "3180715edb37f6e96bec42f92f00169faa8886ef",
+      "mode": "100644"
+    },
+    {
+      "path": "vendor/mattpocock/skills/diagnosing-bugs/SKILL.md",
+      "sourcePath": "skills/engineering/diagnosing-bugs/SKILL.md",
+      "gitBlobSha": "d039541ddd1c46e6ddbd662fe99d49b686fc5e12",
+      "mode": "100644"
+    },
+    {
+      "path": "vendor/mattpocock/skills/diagnosing-bugs/agents/openai.yaml",
+      "sourcePath": "skills/engineering/diagnosing-bugs/agents/openai.yaml",
+      "gitBlobSha": "a13a755a77634ce61a649a3a0d905a66d3865b35",
+      "mode": "100644"
+    },
+    {
+      "path": "vendor/mattpocock/skills/diagnosing-bugs/scripts/hitl-loop.template.sh",
+      "sourcePath": "skills/engineering/diagnosing-bugs/scripts/hitl-loop.template.sh",
+      "gitBlobSha": "243198464a8401a7ba1d63b3708fa43c3d067665",
+      "mode": "100644"
+    },
+    {
+      "path": "vendor/mattpocock/skills/domain-modeling/ADR-FORMAT.md",
+      "sourcePath": "skills/engineering/domain-modeling/ADR-FORMAT.md",
+      "gitBlobSha": "d7e61f30a9fd8ca70d9ee68f019c2a9ebf2d13f7",
+      "mode": "100644"
+    },
+    {
+      "path": "vendor/mattpocock/skills/domain-modeling/GLOSSARY-FORMAT.md",
+      "sourcePath": "skills/engineering/domain-modeling/GLOSSARY-FORMAT.md",
+      "gitBlobSha": "9c0b4c7a2e8507c23cbb5e0baa66d81699321cc6",
+      "mode": "100644"
+    },
+    {
+      "path": "vendor/mattpocock/skills/domain-modeling/SKILL.md",
+      "sourcePath": "skills/engineering/domain-modeling/SKILL.md",
+      "gitBlobSha": "a4438c6879c517d1a08e2b5fbca049b632688dfe",
+      "mode": "100644"
+    },
+    {
+      "path": "vendor/mattpocock/skills/domain-modeling/agents/openai.yaml",
+      "sourcePath": "skills/engineering/domain-modeling/agents/openai.yaml",
+      "gitBlobSha": "7f1522d2f11506ee205275ab7c282aa52366ecf6",
+      "mode": "100644"
+    },
+    {
+      "path": "vendor/mattpocock/skills/grill-with-docs/SKILL.md",
+      "sourcePath": "skills/engineering/grill-with-docs/SKILL.md",
+      "gitBlobSha": "62b9efb6f991d1b229adee7506962f13ced0c499",
+      "mode": "100644"
+    },
+    {
+      "path": "vendor/mattpocock/skills/grill-with-docs/agents/openai.yaml",
+      "sourcePath": "skills/engineering/grill-with-docs/agents/openai.yaml",
+      "gitBlobSha": "5dbe2780a51be3e9b118bd7758a73e54a9384e11",
+      "mode": "100644"
+    },
+    {
+      "path": "vendor/mattpocock/skills/setup-matt-pocock-skills/SKILL.md",
+      "sourcePath": "skills/engineering/setup-matt-pocock-skills/SKILL.md",
+      "gitBlobSha": "293c25b75590119794af03b037ba4288054a32b3",
+      "mode": "100644"
+    },
+    {
+      "path": "vendor/mattpocock/skills/setup-matt-pocock-skills/agents/openai.yaml",
+      "sourcePath": "skills/engineering/setup-matt-pocock-skills/agents/openai.yaml",
+      "gitBlobSha": "65a0da8128c98051183235e490767a8065310868",
+      "mode": "100644"
+    },
+    {
+      "path": "vendor/mattpocock/skills/setup-matt-pocock-skills/domain.md",
+      "sourcePath": "skills/engineering/setup-matt-pocock-skills/domain.md",
+      "gitBlobSha": "4032de016c1e91119d33d477633e2b8f265f4195",
+      "mode": "100644"
+    },
+    {
+      "path": "vendor/mattpocock/skills/setup-matt-pocock-skills/issue-tracker-github.md",
+      "sourcePath": "skills/engineering/setup-matt-pocock-skills/issue-tracker-github.md",
+      "gitBlobSha": "a63510f74038300d8da354553f9d31d1bd954d94",
+      "mode": "100644"
+    },
+    {
+      "path": "vendor/mattpocock/skills/setup-matt-pocock-skills/issue-tracker-gitlab.md",
+      "sourcePath": "skills/engineering/setup-matt-pocock-skills/issue-tracker-gitlab.md",
+      "gitBlobSha": "81499dca459e8097d560b641f8ba7c2e1c7c9da4",
+      "mode": "100644"
+    },
+    {
+      "path": "vendor/mattpocock/skills/setup-matt-pocock-skills/issue-tracker-local.md",
+      "sourcePath": "skills/engineering/setup-matt-pocock-skills/issue-tracker-local.md",
+      "gitBlobSha": "0209a19af92c9c485cf3acc3d9e253171517ea17",
+      "mode": "100644"
+    },
+    {
+      "path": "vendor/mattpocock/skills/setup-matt-pocock-skills/triage-labels.md",
+      "sourcePath": "skills/engineering/setup-matt-pocock-skills/triage-labels.md",
+      "gitBlobSha": "5276464244857a3cc29890ff4a978a197b21f3fc",
+      "mode": "100644"
+    },
+    {
+      "path": "vendor/mattpocock/skills/tdd/SKILL.md",
+      "sourcePath": "skills/engineering/tdd/SKILL.md",
+      "gitBlobSha": "01eadaa34e7c9a63a67d6dc3cce1cc81b0e49985",
+      "mode": "100644"
+    },
+    {
+      "path": "vendor/mattpocock/skills/tdd/agents/openai.yaml",
+      "sourcePath": "skills/engineering/tdd/agents/openai.yaml",
+      "gitBlobSha": "651b838a7663e027b1b8884491e867f26bb9a021",
+      "mode": "100644"
+    },
+    {
+      "path": "vendor/mattpocock/skills/tdd/mocking.md",
+      "sourcePath": "skills/engineering/tdd/mocking.md",
+      "gitBlobSha": "71cbfee674d93244ce81d1830b930ca9a69200bd",
+      "mode": "100644"
+    },
+    {
+      "path": "vendor/mattpocock/skills/tdd/tests.md",
+      "sourcePath": "skills/engineering/tdd/tests.md",
+      "gitBlobSha": "7ab86479f925a1f9e8ba680af33cb3b12e015381",
+      "mode": "100644"
+    },
+    {
+      "path": "vendor/mattpocock/skills/to-spec/SKILL.md",
+      "sourcePath": "skills/engineering/to-spec/SKILL.md",
+      "gitBlobSha": "3f52599ae2a4347aee5a07432c2707518e691a7f",
+      "mode": "100644"
+    },
+    {
+      "path": "vendor/mattpocock/skills/to-spec/agents/openai.yaml",
+      "sourcePath": "skills/engineering/to-spec/agents/openai.yaml",
+      "gitBlobSha": "549e6f76f020a1b9ba65f52ccda336566ee6222a",
+      "mode": "100644"
+    },
+    {
+      "path": "vendor/mattpocock/skills/to-tickets/SKILL.md",
+      "sourcePath": "skills/engineering/to-tickets/SKILL.md",
+      "gitBlobSha": "9b77a01db9460c99c22d03c910c349f890f12c0e",
+      "mode": "100644"
+    },
+    {
+      "path": "vendor/mattpocock/skills/to-tickets/agents/openai.yaml",
+      "sourcePath": "skills/engineering/to-tickets/agents/openai.yaml",
+      "gitBlobSha": "24605a5db64e4fc750b999aa94aea126bee814ee",
+      "mode": "100644"
+    },
+    {
+      "path": "vendor/mattpocock/skills/grilling/SKILL.md",
+      "sourcePath": "skills/productivity/grilling/SKILL.md",
+      "gitBlobSha": "df69d9936880cd3314c28858c6c52f48db23b856",
+      "mode": "100644"
+    },
+    {
+      "path": "vendor/mattpocock/skills/grilling/agents/openai.yaml",
+      "sourcePath": "skills/productivity/grilling/agents/openai.yaml",
+      "gitBlobSha": "ddbdb96139c0c1dfe6bca698f39d0465674b8a39",
+      "mode": "100644"
+    },
+    {
+      "path": "vendor/mattpocock/skills/handoff/SKILL.md",
+      "sourcePath": "skills/productivity/handoff/SKILL.md",
+      "gitBlobSha": "a224edc643a20ddb989f9bca1547440169159810",
+      "mode": "100644"
+    },
+    {
+      "path": "vendor/mattpocock/skills/handoff/agents/openai.yaml",
+      "sourcePath": "skills/productivity/handoff/agents/openai.yaml",
+      "gitBlobSha": "6e1d8da121beceddc2f9ec7fa8714c1d914dd11a",
+      "mode": "100644"
+    },
+    {
+      "path": "vendor/mattpocock/skills/writing-for-agents/SKILL-MECHANICS.md",
+      "sourcePath": "skills/productivity/writing-for-agents/SKILL-MECHANICS.md",
+      "gitBlobSha": "9cdbdb22aadc438755392216e75ad9a14cc9832e",
+      "mode": "100644"
+    },
+    {
+      "path": "vendor/mattpocock/skills/writing-for-agents/SKILL.md",
+      "sourcePath": "skills/productivity/writing-for-agents/SKILL.md",
+      "gitBlobSha": "a37608daf6e835e767deecfb498facecaaba82ba",
+      "mode": "100644"
+    },
+    {
+      "path": "vendor/mattpocock/skills/writing-for-agents/agents/openai.yaml",
+      "sourcePath": "skills/productivity/writing-for-agents/agents/openai.yaml",
+      "gitBlobSha": "079c933b75743dec18b5d0c01006def20b6aad26",
+      "mode": "100644"
+    },
+    {
+      "path": "vendor/mattpocock/skills/code-review/SKILL.md",
+      "sourcePath": "skills/engineering/code-review/SKILL.md",
+      "gitBlobSha": "373a4f26e6cfa3617778397945bb069d9cb184bc",
+      "mode": "100644"
+    },
+    {
+      "path": "vendor/mattpocock/skills/code-review/agents/openai.yaml",
+      "sourcePath": "skills/engineering/code-review/agents/openai.yaml",
+      "gitBlobSha": "9076774ba327f49068db9273feceda03bfe940fa",
+      "mode": "100644"
+    },
+    {
+      "path": "vendor/mattpocock/LICENSE",
+      "sourcePath": "LICENSE",
+      "gitBlobSha": "f1dd2c09108dde1a5f56097cee8461b3ea834499",
+      "mode": "100644"
+    }
+  ]
+}

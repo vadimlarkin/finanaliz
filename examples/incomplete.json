@@ -1,0 +1,122 @@
+{
+  "schema_version": "1.0",
+  "company": {
+    "name": "ООО «Неполные данные»",
+    "business_model": "operating",
+    "fictional": true
+  },
+  "assessment_date": "2026-01-15",
+  "balance_date": "2025-12-31",
+  "period": {
+    "start": "2025-01-01",
+    "end": "2025-12-31"
+  },
+  "currency": "RUB",
+  "facts": {
+    "operating_profit": {
+      "value": 30000000,
+      "status": "confirmed",
+      "sources": [
+        "S1"
+      ],
+      "period_start": "2025-01-01",
+      "period_end": "2025-12-31"
+    },
+    "interest_expense": {
+      "value": 8000000,
+      "status": "confirmed",
+      "sources": [
+        "S1"
+      ],
+      "period_start": "2025-01-01",
+      "period_end": "2025-12-31"
+    },
+    "interest_bearing_debt": {
+      "value": 60000000,
+      "status": "confirmed",
+      "sources": [
+        "S1"
+      ],
+      "as_of": "2025-12-31"
+    },
+    "equity": {
+      "value": 60000000,
+      "status": "confirmed",
+      "sources": [
+        "S1"
+      ],
+      "as_of": "2025-12-31"
+    },
+    "current_assets": {
+      "value": 90000000,
+      "status": "confirmed",
+      "sources": [
+        "S1"
+      ],
+      "as_of": "2025-12-31"
+    },
+    "current_liabilities": {
+      "value": 45000000,
+      "status": "confirmed",
+      "sources": [
+        "S1"
+      ],
+      "as_of": "2025-12-31"
+    },
+    "unrestricted_cash": {
+      "value": 15000000,
+      "status": "confirmed",
+      "sources": [
+        "S3"
+      ],
+      "as_of": "2026-01-15"
+    },
+    "new_loan_amount": {
+      "value": 10000000,
+      "status": "confirmed",
+      "sources": [
+        "S2"
+      ]
+    },
+    "new_loan_term_months": {
+      "value": 12,
+      "status": "confirmed",
+      "sources": [
+        "S2"
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "S1",
+      "file": "synthetic-statements.md",
+      "locator": "Колонка «Неполные данные», 2025 год"
+    },
+    {
+      "id": "S2",
+      "file": "synthetic-loan.md",
+      "locator": "Условия учебного займа"
+    },
+    {
+      "id": "S3",
+      "file": "synthetic-calendar.md",
+      "locator": "План и свободные деньги на 15.01.2026"
+    }
+  ],
+  "loan_repayment": "bullet",
+  "loan_interest_basis": "simple_monthly",
+  "stress": {
+    "earnings_drop_pct": 20
+  },
+  "context": {
+    "observations": [
+      "Баланс не подтверждает источник выплаты процентов и тела займа."
+    ],
+    "questions": [
+      "Предоставьте ОДДС или полные банковские выписки.",
+      "Нужны графики долгов и платёжный план на 90 дней.",
+      "Уточните ставку и комиссии предлагаемого займа."
+    ],
+    "limitations": []
+  }
+}

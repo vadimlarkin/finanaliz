@@ -1,0 +1,4 @@
+interface:
+  display_name: "Финансы заёмщика"
+  short_description: "Проверка заёмщика на одном листе с датчиками"
+  default_prompt: "Используй $borrower-financial-analysis: проверь документы заёмщика и подготовь один лист PDF с финансовыми датчиками."
