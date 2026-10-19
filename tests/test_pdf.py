@@ -19,6 +19,16 @@ except ImportError:
 
 @unittest.skipIf(render_dashboard is None, 'PDF checks require reportlab and pypdf')
 class PdfContract(unittest.TestCase):
+    def test_forbidden_principal_jargon_blocks_release_and_preserves_existing_pdf(self):
+        data = json.loads((ROOT/'examples/operating.json').read_text())
+        data['context']['observations'] = ['Нужно проверить тело долга.']
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder)/'report.pdf'
+            path.write_bytes(b'previous approved PDF')
+            with self.assertRaisesRegex(ValueError, 'основной долг'):
+                render_dashboard.render(data, path)
+            self.assertEqual(path.read_bytes(), b'previous approved PDF')
+
     def test_fixed_approved_geometry_is_independent_of_financial_case(self):
         # Independently specified rectangles of the selected A4 mockup.
         expected = [(0, 0, 595.28, 841.89), (36, 619.89, 523, 78),

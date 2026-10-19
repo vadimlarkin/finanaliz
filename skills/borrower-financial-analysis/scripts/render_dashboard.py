@@ -17,6 +17,7 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen.canvas import Canvas
 from reportlab.platypus import Paragraph
 from analyze import ACCEPTED, InputError, analyze, load_input
+from check_terminology import check_file, check_text
 
 LAYOUT_VERSION = 'credit-committee-1.0'
 PAPER_W, PAPER_H = 595.28, 841.89
@@ -69,6 +70,7 @@ def register_fonts(font_dir=None):
 
 def text_box(c, text, x, y, width, height, size=9, color=INK, bold=False, center=False):
     """Existing helper interface: y is measured from the PDF bottom."""
+    check_text(str(text))
     style=ParagraphStyle('fixed',fontName='BodyBold' if bold else 'Body',fontSize=size,
                          leading=size*1.28,textColor=colors.HexColor(color),alignment=TA_LEFT,
                          splitLongWords=True)
@@ -142,7 +144,7 @@ def render(data,destination,font_dir=None):
                 text_box(c,display,x,PAPER_H-top-h,w,h,15)
             else:field(c,'loan_'+slot,display)
             if slot=='term':
-                label += ' / ТЕЛО В КОНЦЕ' if data.get('loan_repayment')=='bullet' else ' / ПО ГРАФИКУ' if data.get('loan_repayment')=='schedule' else ''
+                label += ' / ОСНОВНОЙ ДОЛГ В КОНЦЕ' if data.get('loan_repayment')=='bullet' else ' / ПО ГРАФИКУ' if data.get('loan_repayment')=='schedule' else ''
             field(c,'loan_'+slot+'_label',label+(' ['+', '.join(refs)+']' if refs else ''),MUTED)
         rule(c,36,319,559,INK,.9)
         for key,label in [('title','ПОКАЗАТЕЛЬ'),('value','ЗНАЧЕНИЕ'),('note','ПРОЧТЕНИЕ')]:field(c,'head_'+key,label,MUTED)
@@ -174,7 +176,9 @@ def render(data,destination,font_dir=None):
         meta=f"Проверка {result['assessment_date']} • Баланс {result['balance_date']} • Период {period['start']} — {period['end']}"
         field(c,'limitations',meta+'\n'+' '.join(result['limitations']),MUTED)
         field(c,'footer','ФИНАНСОВЫЙ АНАЛИЗ / '+LAYOUT_VERSION,MUTED)
-        c.showPage();c.save();os.replace(temporary,target)
+        c.showPage();c.save()
+        check_file(temporary)
+        os.replace(temporary,target)
     except Exception:
         Path(temporary).unlink(missing_ok=True)
         raise

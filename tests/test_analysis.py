@@ -3,10 +3,12 @@ import copy
 import json
 import tempfile
 import unittest
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / 'skills/borrower-financial-analysis/scripts/analyze.py'
+sys.path.insert(0, str(SCRIPT.parent))
 
 
 class CalculationContract(unittest.TestCase):

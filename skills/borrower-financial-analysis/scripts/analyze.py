@@ -10,6 +10,7 @@ import sys
 from datetime import date
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
+from check_terminology import check_payload
 
 VERSION = '1.0.0'
 FLOW = {
@@ -229,7 +230,7 @@ def analyze(data):
             numerator += value('portfolio_net_cashflow')
         return numerator/denominator if denominator > 0 else None
     metric('cash_coverage', 'Денежное покрытие', cash_keys,
-           '(ОДДС + проценты в ОДДС + поправка портфеля) / (уплаченные проценты + тело долга)',
+           '(ОДДС + проценты в ОДДС + поправка портфеля) / (уплаченные проценты + основной долг)',
            cash_cover, Decimal('1'), Decimal('1.3'), Decimal('3'),
            'Исторический поток до капзатрат; это не прогноз и не DSCR.')
 
@@ -255,10 +256,10 @@ def analyze(data):
            'Прошлогодний заработок / (прошлогодние проценты + новые проценты и комиссии за 12 мес.)',
            lambda: earnings/total_interest if total_interest is not None and total_interest > 0 else None,
            Decimal('1'), Decimal('3'), Decimal('5'),
-           'Условный сценарий без роста прибыли. Возврат тела проверяется отдельно.' if annual else 'Для сравнения нужен полный год или сопоставимые 12 месяцев.')
+           'Условный сценарий без роста прибыли. Возврат основного долга проверяется отдельно.' if annual else 'Для сравнения нужен полный год или сопоставимые 12 месяцев.')
     if not annual:
         limitations.append('Промежуточный период не пересчитывается автоматически в год: датчик нового займа недоступен.')
-    limitations.append('Покрытие процентов не подтверждает источник возврата основной суммы займа.')
+    limitations.append('Покрытие процентов не подтверждает источник возврата основного долга.')
 
     shock = number(data.get('stress', {}).get('earnings_drop_pct', 20), 'stress')
     stress_value = earnings*(1-shock/100)/total_interest if earnings is not None and total_interest is not None and total_interest > 0 else None
@@ -300,8 +301,8 @@ def analyze(data):
         observations = ['Сигналы: '+', '.join(red)+'.'] if red else ['Цвета относятся к отдельным показателям, а не к вероятности возврата займа.']
     questions = list(data.get('context', {}).get('questions', []))
     if not questions:
-        questions = ['Чем подтверждён возврат основной суммы займа?', 'Есть ли свежий платёжный календарь и расшифровка долгов?']
-    return {'schema_version': '1.0', 'engine_version': VERSION,
+        questions = ['Чем подтверждён возврат основного долга?', 'Есть ли свежий платёжный календарь и расшифровка долгов?']
+    result = {'schema_version': '1.0', 'engine_version': VERSION,
             'company': data['company'], 'assessment_date': data['assessment_date'],
             'balance_date': data['balance_date'], 'period': data['period'],
             'metrics': metrics, 'stress': stress, 'risk': risk,
@@ -311,6 +312,8 @@ def analyze(data):
             'limitations': list(dict.fromkeys(limitations)), 'sources': data['sources'],
             'new_interest_12m': float(new_interest) if new_interest is not None else None,
             'scale_notice': 'Цветовые зоны — авторские ориентиры предварительной проверки, не нормативы и не рейтинг.'}
+    check_payload(result)
+    return result
 
 
 def unique_pairs(pairs):
