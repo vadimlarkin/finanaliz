@@ -1,191 +1,180 @@
 #!/usr/bin/env python3
-"""Render a single A4 page from validated input. No network or model calls."""
+"""Render the fixed credit-committee A4 template from validated input, offline."""
 from __future__ import annotations
-
 import argparse
+import hashlib
 import html
 import json
-import math
 import os
 import sys
 import tempfile
 from pathlib import Path
-
 from reportlab.lib import colors
-from reportlab.lib.enums import TA_CENTER, TA_LEFT
+from reportlab.lib.enums import TA_LEFT
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen.canvas import Canvas
 from reportlab.platypus import Paragraph
+from analyze import ACCEPTED, InputError, analyze, load_input
 
-from analyze import InputError, analyze, load_input
-
-INK = '#152C42'
-MUTED = '#647487'
-COLORS = {'green': '#268B70', 'yellow': '#D69429', 'red': '#CA5059',
-          'unknown': '#B4BCC5', 'context': '#8995A2'}
-PAPER_W, PAPER_H = 595.276, 841.89
-
+LAYOUT_VERSION = 'credit-committee-1.0'
+PAPER_W, PAPER_H = 595.28, 841.89
+INK, MUTED, BLUE = '#15283F', '#66767A', '#204DC8'
+RULE, PALE, HIGHLIGHT = '#D8DFDD', '#F1F3F5', '#ECF0FB'
+# The only design authority: coordinates are points measured from the top left.
+# x, top, width, height, font size, bold. Fields never change size or position.
+SLOTS = {
+ 'brand': (36,23,260,12,7.5,True),
+ 'kind': (310,23,249,12,7.2,False),
+ 'company': (36,68,523,18,9,True),
+ 'title': (36,91,523,40,27,True),
+ 'summary': (51,156,493,39,14,True),
+ 'coverage': (51,202,493,13,8,False),
+ 'loan_amount': (36,245,162,34,25,False),
+ 'loan_rate': (216,245,162,34,25,False),
+ 'loan_term': (396,245,163,34,25,False),
+ 'loan_amount_label': (36,282,170,22,7,True),
+ 'loan_rate_label': (216,282,170,22,7,True),
+ 'loan_term_label': (396,282,163,22,7,True),
+ 'head_title': (36,332,240,13,7,True),
+ 'head_value': (292,332,100,13,7,True),
+ 'head_note': (412,332,147,13,7,True),
+ 'stress_title': (36,599,365,19,10,True),
+ 'stress_value': (436,588,123,37,27,False),
+ 'stress_note': (36,623,523,26,8,False),
+ 'action_title': (36,669,523,14,8,True),
+ 'actions': (36,690,523,58,8.5,False),
+ 'sources': (36,765,523,22,6.3,False),
+ 'limitations': (36,790,523,27,6.3,False),
+ 'footer': (36,815,523,14,6.6,True),
+}
+# Exact hashes of redistributable font assets; never select an OS fallback.
+FONT_FILES = {'Body': 'LiberationSans-Regular.ttf', 'BodyBold': 'LiberationSans-Bold.ttf',
+              'BodySymbol': 'DejaVuSans.ttf'}
+FONT_HASHES = {'LiberationSans-Regular.ttf': 'f8ace1f892b2bd9dc1792ba7f097fa7588f84fed48321480e04de5390828221f', 'LiberationSans-Bold.ttf': '361c61b82d575c5c35fd9157fda8b0194bcfcd0d88ea8521a4fb5dd53d33dddc', 'DejaVuSans.ttf': '7da195a74c55bef988d0d48f9508bd5d849425c1770dba5d7bfc6ce9ed848954'}
 
 class LayoutError(ValueError):
     pass
 
 
 def register_fonts(font_dir=None):
-    candidates = []
-    if font_dir:
-        folder = Path(font_dir)
-        candidates.extend([(folder/'DejaVuSans.ttf', folder/'DejaVuSans-Bold.ttf'),
-                           (folder/'Arial.ttf', folder/'Arial Bold.ttf')])
-    assets = Path(__file__).resolve().parents[1]/'assets/fonts'
-    candidates.extend([(assets/'DejaVuSans.ttf', assets/'DejaVuSans-Bold.ttf'),
-                       (Path('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf'), Path('/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf')),
-                       (Path('/usr/share/fonts/dejavu-sans-fonts/DejaVuSans.ttf'), Path('/usr/share/fonts/dejavu-sans-fonts/DejaVuSans-Bold.ttf')),
-                       (Path('/System/Library/Fonts/Supplemental/Arial.ttf'), Path('/System/Library/Fonts/Supplemental/Arial Bold.ttf'))])
-    for regular, bold in candidates:
-        if regular.is_file() and bold.is_file():
-            pdfmetrics.registerFont(TTFont('Body', str(regular)))
-            pdfmetrics.registerFont(TTFont('BodyBold', str(bold)))
-            return
-    raise LayoutError('Нужны кириллические TTF-шрифты: укажите --font-dir или установите fonts-dejavu-core')
+    folder = Path(font_dir) if font_dir else Path(__file__).resolve().parents[1]/'assets/fonts'
+    for name, file in FONT_FILES.items():
+        path = folder/file
+        if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != FONT_HASHES[file]:
+            raise LayoutError(f'Нужен неизменённый шрифт макета {LAYOUT_VERSION}: {file}')
+        pdfmetrics.registerFont(TTFont(name,str(path)))
 
 
-def text_box(c, text, x, y, width, height, size=9, color=INK,
-             bold=False, center=False):
-    style = ParagraphStyle('box', fontName='BodyBold' if bold else 'Body',
-                           fontSize=size, leading=size*1.28,
-                           textColor=colors.HexColor(color),
-                           alignment=TA_CENTER if center else TA_LEFT,
-                           splitLongWords=True)
-    paragraph = Paragraph(html.escape(str(text)).replace('\n', '<br/>'), style)
-    _, actual = paragraph.wrap(width, height)
-    if actual > height+0.1:
-        raise LayoutError(f'Текст не помещается в один лист ({actual:.1f}>{height:.1f} pt): {str(text)[:70]}')
-    paragraph.drawOn(c, x, y+height-actual)
+def text_box(c, text, x, y, width, height, size=9, color=INK, bold=False, center=False):
+    """Existing helper interface: y is measured from the PDF bottom."""
+    style=ParagraphStyle('fixed',fontName='BodyBold' if bold else 'Body',fontSize=size,
+                         leading=size*1.28,textColor=colors.HexColor(color),alignment=TA_LEFT,
+                         splitLongWords=True)
+    content=html.escape(str(text)).replace('\n','<br/>').replace('₽','<font name="BodySymbol">₽</font>')
+    p=Paragraph(content,style)
+    _,actual=p.wrap(width,height)
+    if actual>height+.1:
+        raise LayoutError(f'Поле фиксированного макета переполнено ({actual:.1f}>{height:.1f} pt): {str(text)[:80]}')
+    p.drawOn(c,x,y+height-actual)
 
 
-def card(c, x, y, width, height, fill='#F4F7FA'):
-    c.setFillColor(colors.HexColor(fill))
-    c.setStrokeColor(colors.HexColor('#E1E7ED'))
-    c.setLineWidth(0.6)
-    c.roundRect(x, y, width, height, 10, fill=1, stroke=1)
+def field(c, name, text, color=INK):
+    x,top,w,h,size,bold=SLOTS[name]
+    text_box(c,text,x,PAPER_H-top-h,w,h,size,color,bold)
 
 
-def gauge(c, metric, x, y, width, height):
-    card(c, x, y, width, height)
-    text_box(c, metric['title'], x+8, y+height-31, width-16, 21,
-             size=10, bold=True, center=True)
-    cx, cy, radius = x+width/2, y+71, 50
-    low, high = metric['thresholds']
-    maximum = metric['scale_max']
-    val = metric['value']
-    c.setLineWidth(8)
-    if metric['status'] in {'unknown', 'context'}:
-        c.setStrokeColor(colors.HexColor('#D5DBE1'))
-        c.arc(cx-radius, cy-radius, cx+radius, cy+radius, 0, 180)
-    else:
-        boundaries = [0, low/maximum, high/maximum, 1]
-        band_colors = ['green', 'yellow', 'red'] if metric['reverse'] else ['red', 'yellow', 'green']
-        for left, right, color in zip(boundaries[:-1], boundaries[1:], band_colors):
-            c.setStrokeColor(colors.HexColor(COLORS[color]))
-            c.arc(cx-radius, cy-radius, cx+radius, cy+radius,
-                  startAng=180-180*right, extent=180*(right-left)-0.8)
-    c.setLineWidth(0.6)
-    if val is not None:
-        clamped = max(0, min(1, val/maximum))
-        angle = math.radians(180-180*clamped)
-        c.setStrokeColor(colors.HexColor(INK))
-        c.setLineWidth(2)
-        c.line(cx, cy, cx+39*math.cos(angle), cy+39*math.sin(angle))
-        c.setFillColor(colors.HexColor(INK))
-        c.circle(cx, cy, 3.5, stroke=0, fill=1)
-    c.setFont('Body', 6)
-    c.setFillColor(colors.HexColor(MUTED))
-    c.drawString(cx-radius-1, cy-12, '0')
-    c.drawRightString(cx+radius+3, cy-12, str(int(maximum))+'×')
-    display = metric['display']
-    if val is not None and (val < 0 or val > maximum):
-        display += ' *'
-    text_box(c, display, x+6, y+36, width-12, 29,
-             size=19 if val is not None else 12, bold=True, center=True)
-    labels = {'red': 'СИГНАЛ РИСКА', 'yellow': 'ТРЕБУЕТ ВНИМАНИЯ', 'green': 'ЕСТЬ ЗАПАС',
-              'unknown': 'НЕДОСТАТОЧНО ДАННЫХ', 'context': 'БЕЗ ОЦЕНОЧНОЙ ШКАЛЫ'}
-    text_box(c, labels[metric['status']], x+5, y+21, width-10, 11,
-             size=6.5, color=COLORS[metric['status']], bold=True, center=True)
-    reference = ', '.join(metric['sources']) or 'источника нет'
-    text_box(c, '['+reference+']', x+6, y+6, width-12, 10,
-             size=6, color=MUTED, center=True)
+def rect(c,x,top,w,h,fill):
+    c.setFillColor(colors.HexColor(fill));c.rect(x,PAPER_H-top-h,w,h,fill=1,stroke=0)
 
 
-def render(data, destination, font_dir=None):
-    result = analyze(data)
+def rule(c,x,top,x2,color=RULE,width=.6):
+    c.setStrokeColor(colors.HexColor(color));c.setLineWidth(width)
+    c.line(x,PAPER_H-top,x2,PAPER_H-top)
+
+
+def loan_fact(data,key):
+    fact=data['facts'].get(key,{})
+    if fact.get('status') not in ACCEPTED or fact.get('value') is None:
+        return None,[]
+    return fact['value'],fact.get('sources',[])
+
+
+def compact(value):
+    return f'{value:g}'.replace('.',',')
+
+
+def amount(value):
+    if value is None:return 'Нет данных'
+    if abs(value)>=1000000:return compact(value/1000000)+' млн ₽'
+    if abs(value)>=1000:return compact(value/1000)+' тыс. ₽'
+    return compact(value)+' ₽'
+
+
+def render(data,destination,font_dir=None):
+    result=analyze(data)
     register_fonts(font_dir)
-    target = Path(destination)
-    target.parent.mkdir(parents=True, exist_ok=True)
-    fd, temporary = tempfile.mkstemp(suffix='.pdf', dir=str(target.parent))
-    os.close(fd)
+    target=Path(destination);target.parent.mkdir(parents=True,exist_ok=True)
+    fd,temporary=tempfile.mkstemp(suffix='.pdf',dir=str(target.parent));os.close(fd)
     try:
-        c = Canvas(temporary, pagesize=(PAPER_W, PAPER_H), invariant=1,
-                   pageCompression=1)
-        c.setTitle('Финансовая проверка — '+result['company']['name'])
+        c=Canvas(temporary,pagesize=(PAPER_W,PAPER_H),invariant=1,pageCompression=1)
+        c.setTitle('Заключение по новому займу — '+result['company']['name'])
         c.setAuthor('Borrower Financial Analysis')
-        c.setFillColor(colors.white)
-        c.rect(0, 0, PAPER_W, PAPER_H, fill=1, stroke=0)
-        margin, usable = 28, PAPER_W-56
-        text_box(c, 'ФИНАНСЫ ЗАЁМЩИКА', margin, 793, usable, 27,
-                 size=20, bold=True)
-        demo = '  /  ВЫМЫШЛЕННЫЙ ПРИМЕР' if result['company'].get('fictional') else ''
-        text_box(c, result['company']['name']+demo, margin, 771, usable, 19,
-                 size=11, bold=True)
-        period = result['period']
-        metadata = f"Проверка: {result['assessment_date']}  •  Баланс: {result['balance_date']}  •  Период: {period['start']} — {period['end']}"
-        text_box(c, metadata, margin, 750, usable, 15, size=7.2, color=MUTED)
-        fill = {'high': '#FCEFF0', 'attention': '#FFF7E7', 'not_seen_in_metrics': '#EBF6F1'}[result['risk']]
-        card(c, margin, 686, usable, 54, fill)
-        text_box(c, result['conclusion'], margin+12, 714, usable-24, 17,
-                 size=11, bold=True)
-        completeness = 'данные ограничены' if result['data_status'] == 'limited' else 'достаточно для расчёта; проверка предварительная'
-        text_box(c, f"Доступны расчёты: {result['calculation_coverage']}  •  {completeness}",
-                 margin+12, 695, usable-24, 14, size=8.2, color=MUTED)
-
-        gap, width, height = 10, (usable-20)/3, 157
-        positions = [(margin+i*(width+gap), 516) for i in range(3)]
-        positions += [(margin+i*(width+gap), 349) for i in range(2)]
-        for metric, (x, y) in zip(result['metrics'], positions):
-            gauge(c, metric, x, y, width, height)
-        sx = margin+2*(width+gap)
-        card(c, sx, 349, width, height, '#EEF2F7')
-        text_box(c, 'ЗАПАС ПРОЧНОСТИ', sx+10, 477, width-20, 17,
-                 size=9, bold=True, center=True)
-        stress = result['stress']
-        text_box(c, f"Прибыль −{stress['earnings_drop_pct']:g}%", sx+9, 449, width-18, 19,
-                 size=11, center=True)
-        display = 'Нет данных' if stress['interest_coverage'] is None else f"{stress['interest_coverage']:.2f}×".replace('.', ',')
-        text_box(c, display, sx+8, 417, width-16, 29, size=21,
-                 bold=True, center=True, color=COLORS[stress['status']])
-        text_box(c, 'Покрытие процентов с новым займом.\nУсловный сценарий, не прогноз.',
-                 sx+11, 365, width-22, 42, size=8, center=True)
-
-        explanations = []
-        for index, metric in enumerate(result['metrics'], 1):
-            explanations.append(f"{index}. {metric['note']}")
-        text_box(c, 'КАК ЧИТАТЬ ДАТЧИКИ', margin, 326, usable, 14, size=8.5, bold=True)
-        text_box(c, '\n'.join(explanations), margin, 261, usable, 64, size=7.2, color=MUTED)
-        text_box(c, 'ГЛАВНОЕ ДЛЯ КРЕДИТОРА', margin, 238, usable, 15, size=9, bold=True)
-        observations = '\n'.join('• '+t for t in result['observations'])
-        text_box(c, observations, margin, 190, usable, 47, size=8.1)
-        text_box(c, 'ЧТО УТОЧНИТЬ ДО РЕШЕНИЯ', margin, 169, usable, 14, size=8.5, bold=True)
-        text_box(c, '\n'.join('• '+t for t in result['questions']), margin, 121, usable, 47, size=8)
-
-        source_labels = [s['id']+': '+Path(s['file']).name for s in result['sources']]
-        text_box(c, 'Источники: '+'; '.join(source_labels), margin, 84, usable, 30,
-                 size=6.5, color=MUTED)
-        foot = result['scale_notice']+'\n* Значение за пределами шкалы показано числом. Возврат тела займа проверяется отдельно.\nРешение о финансировании принимает кредитор. Документы заёмщика не загружаются скриптами в сеть.'
-        text_box(c, foot, margin, 31, usable, 46, size=6.5, color=MUTED)
-        c.showPage()
-        c.save()
-        os.replace(temporary, target)
+        c.setSubject('Fixed layout '+LAYOUT_VERSION)
+        rect(c,0,0,PAPER_W,PAPER_H,'#FFFFFF')
+        field(c,'brand','ФИНАНСЫ ЗАЁМЩИКА')
+        field(c,'kind','ПРЕДВАРИТЕЛЬНАЯ ОЦЕНКА ЗАЁМЩИКА')
+        rule(c,36,46,559)
+        demo=' / ВЫМЫШЛЕННЫЙ ПРИМЕР' if result['company'].get('fictional') else ''
+        field(c,'company',result['company']['name']+demo,MUTED)
+        field(c,'title','Заключение по новому займу')
+        rect(c,36,144,523,78,PALE);rect(c,36,144,3,78,BLUE)
+        field(c,'summary',result['conclusion'])
+        field(c,'coverage',f"Предварительный анализ • рассчитано {result['calculation_coverage']} показателей",MUTED)
+        definitions=[('amount','new_loan_amount','СУММА ЗАЙМА'),('rate','new_loan_rate_pct','ГОДОВЫХ'),('term','new_loan_term_months','СРОК')]
+        for slot,key,label in definitions:
+            val,refs=loan_fact(data,key)
+            display=amount(val) if slot=='amount' else 'Нет данных' if val is None else compact(val)+('%' if slot=='rate' else ' мес.')
+            # Missing-value font is a fixed design token, never an auto-fit rule.
+            if val is None:
+                x,top,w,h,_,_=SLOTS['loan_'+slot]
+                text_box(c,display,x,PAPER_H-top-h,w,h,15)
+            else:field(c,'loan_'+slot,display)
+            if slot=='term':
+                label += ' / ТЕЛО В КОНЦЕ' if data.get('loan_repayment')=='bullet' else ' / ПО ГРАФИКУ' if data.get('loan_repayment')=='schedule' else ''
+            field(c,'loan_'+slot+'_label',label+(' ['+', '.join(refs)+']' if refs else ''),MUTED)
+        rule(c,36,319,559,INK,.9)
+        for key,label in [('title','ПОКАЗАТЕЛЬ'),('value','ЗНАЧЕНИЕ'),('note','ПРОЧТЕНИЕ')]:field(c,'head_'+key,label,MUTED)
+        for i,metric in enumerate(result['metrics']):
+            top=363+i*43
+            if i==4:rect(c,36,top-7,523,43,HIGHLIGHT)
+            text_box(c,metric['title'],36,PAPER_H-top-30,245,30,10)
+            val=metric['display'] if metric['value'] is not None else 'Нет данных'
+            text_box(c,val,292,PAPER_H-(top-4)-33,100,33,18 if metric['value'] is not None else 10,bold=True)
+            refs=' ['+', '.join(metric['sources'])+']' if metric['sources'] else ''
+            # The analytical limitation remains visible even when no ratio is available.
+            note=metric['note']+refs
+            text_box(c,note,412,PAPER_H-(top-1)-38,147,38,7.1,color=MUTED)
+            rule(c,36,top+31,559)
+        stress=result['stress']
+        field(c,'stress_title',f"Стресс: прибыль -{stress['earnings_drop_pct']:g}%")
+        if stress['interest_coverage'] is None:
+            x,top,w,h,_,_=SLOTS['stress_value']
+            text_box(c,'Нет данных',x,PAPER_H-top-h,w,h,15,color=MUTED)
+        else:field(c,'stress_value',f"{stress['interest_coverage']:.2f}×".replace('.',','),BLUE)
+        field(c,'stress_note','Покрытие процентов после займа; основной долг не включён. Условный сценарий, не прогноз.',MUTED)
+        rule(c,36,653,559,INK,.9)
+        field(c,'action_title','УСЛОВИЯ ДЛЯ ДАЛЬНЕЙШЕГО РАССМОТРЕНИЯ',BLUE)
+        lines=[*result['observations'],*result['questions']]
+        field(c,'actions','\n'.join(f'{i:02d}  {s}' for i,s in enumerate(lines,1)))
+        rule(c,36,756,559)
+        field(c,'sources','Источники: '+'; '.join(s['id']+': '+Path(s['file']).name for s in result['sources']),MUTED)
+        period=result['period']
+        meta=f"Проверка {result['assessment_date']} • Баланс {result['balance_date']} • Период {period['start']} — {period['end']}"
+        field(c,'limitations',meta+'\n'+' '.join(result['limitations']),MUTED)
+        field(c,'footer','ФИНАНСОВЫЙ АНАЛИЗ / '+LAYOUT_VERSION,MUTED)
+        c.showPage();c.save();os.replace(temporary,target)
     except Exception:
         Path(temporary).unlink(missing_ok=True)
         raise
@@ -193,27 +182,22 @@ def render(data, destination, font_dir=None):
 
 
 def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('input_json', help='Исходные факты, не редактируемый результат расчёта')
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('input_json',help='Исходные факты, не редактируемый результат расчёта')
     parser.add_argument('output_pdf')
-    parser.add_argument('--font-dir')
+    parser.add_argument('--font-dir',help='Каталог с точными копиями шрифтов зафиксированного макета')
     parser.add_argument('--audit-json')
-    args = parser.parse_args()
+    args=parser.parse_args()
     try:
-        source, output = Path(args.input_json).resolve(), Path(args.output_pdf).resolve()
-        if source == output or (args.audit_json and Path(args.audit_json).resolve() in {source, output}):
+        source,output=Path(args.input_json).resolve(),Path(args.output_pdf).resolve()
+        if source==output or (args.audit_json and Path(args.audit_json).resolve() in {source,output}):
             raise InputError('Пути исходника, PDF и аудита должны различаться')
-        result = render(load_input(source), output, args.font_dir)
+        result=render(load_input(source),output,args.font_dir)
         if args.audit_json:
-            audit = Path(args.audit_json)
-            audit.parent.mkdir(parents=True, exist_ok=True)
-            audit.write_text(json.dumps(result, ensure_ascii=False, indent=2, allow_nan=False)+'\n', encoding='utf-8')
-    except (InputError, LayoutError, ValueError, OSError, KeyError, TypeError) as exc:
-        print(f'Ошибка: {exc}', file=sys.stderr)
-        return 2
-    print(str(output))
-    return 0
+            audit=Path(args.audit_json);audit.parent.mkdir(parents=True,exist_ok=True)
+            audit.write_text(json.dumps(result,ensure_ascii=False,indent=2,allow_nan=False)+'\n',encoding='utf-8')
+    except (InputError,LayoutError,ValueError,OSError,KeyError,TypeError) as exc:
+        print(f'Ошибка: {exc}',file=sys.stderr);return 2
+    print(str(output));return 0
 
-
-if __name__ == '__main__':
-    raise SystemExit(main())
+if __name__=='__main__':raise SystemExit(main())
