@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render the fixed credit-committee A4 template from validated input, offline."""
+"""Render the approved one-page investor report from evidence-linked input, offline."""
 from __future__ import annotations
 import argparse
 import hashlib
@@ -17,55 +17,52 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen.canvas import Canvas
 from reportlab.platypus import Paragraph
 from analyze import ACCEPTED, InputError, analyze, load_input
+from report_data import FLOW_ROWS, STOCK_ROWS, CHART_ROWS
+from reportlab.pdfbase.pdfmetrics import stringWidth
+from datetime import date
+from decimal import Decimal
 from check_terminology import check_file, check_text
 
-LAYOUT_VERSION = 'credit-committee-1.0'
+LAYOUT_VERSION = 'investor-one-page-2.2'
 PAPER_W, PAPER_H = 595.28, 841.89
-INK, MUTED, BLUE = '#15283F', '#66767A', '#204DC8'
-RULE, PALE, HIGHLIGHT = '#D8DFDD', '#F1F3F5', '#ECF0FB'
-# The only design authority: coordinates are points measured from the top left.
-# x, top, width, height, font size, bold. Fields never change size or position.
-SLOTS = {
- 'brand': (36,23,260,12,7.5,True),
- 'kind': (310,23,249,12,7.2,False),
- 'company': (36,68,523,18,9,True),
- 'title': (36,91,523,40,27,True),
- 'summary': (51,156,493,39,14,True),
- 'coverage': (51,202,493,13,8,False),
- 'loan_amount': (36,245,162,34,25,False),
- 'loan_rate': (216,245,162,34,25,False),
- 'loan_term': (396,245,163,34,25,False),
- 'loan_amount_label': (36,282,170,22,7,True),
- 'loan_rate_label': (216,282,170,22,7,True),
- 'loan_term_label': (396,282,163,22,7,True),
- 'head_title': (36,332,240,13,7,True),
- 'head_value': (292,332,100,13,7,True),
- 'head_note': (412,332,147,13,7,True),
- 'stress_title': (36,599,365,19,10,True),
- 'stress_value': (436,588,123,37,27,False),
- 'stress_note': (36,623,523,26,8,False),
- 'action_title': (36,669,523,14,8,True),
- 'actions': (36,690,523,58,8.5,False),
- 'sources': (36,765,523,22,6.3,False),
- 'limitations': (36,790,523,27,6.3,False),
- 'footer': (36,815,523,14,6.6,True),
-}
+INK, MUTED, BLUE = '#23282D', '#23282D', '#0072EF'
+RULE, PALE, HIGHLIGHT = '#E9F5FF', '#E9F5FF', '#E9F5FF'
+ASSETS = Path(__file__).resolve().parents[1]/'assets'
+LOGO_HASH = '33d4ebd4c516e49244922dd5c345d4ff163033693cc345c215f6ea501bcd043e'
+LOGO_W, LOGO_H = 585.0041, 120.317
+# 35.3 x 7.3 mm, above the guidebook's 24 x 5 mm minimum.
+LOGO_X, LOGO_TOP, LOGO_WIDTH = 36, 23, 100
 # Exact hashes of redistributable font assets; never select an OS fallback.
-FONT_FILES = {'Body': 'LiberationSans-Regular.ttf', 'BodyBold': 'LiberationSans-Bold.ttf',
-              'BodySymbol': 'DejaVuSans.ttf'}
-FONT_HASHES = {'LiberationSans-Regular.ttf': 'f8ace1f892b2bd9dc1792ba7f097fa7588f84fed48321480e04de5390828221f', 'LiberationSans-Bold.ttf': '361c61b82d575c5c35fd9157fda8b0194bcfcd0d88ea8521a4fb5dd53d33dddc', 'DejaVuSans.ttf': '7da195a74c55bef988d0d48f9508bd5d849425c1770dba5d7bfc6ce9ed848954'}
+FONT_FILES = {'Body': 'RobotoFlex-Text.ttf', 'BodyBold': 'RobotoFlex-Heading.ttf'}
+FONT_HASHES = {'RobotoFlex-Text.ttf': '1ea45867601ead14da44818408a8d6af5c28e643b345258ede8e3b2873bd21f8',
+               'RobotoFlex-Heading.ttf': '751b033f8cc4fae744b18675dc777281a10a440fbda2711b0187cf3f6bb5a8da'}
 
 class LayoutError(ValueError):
     pass
 
 
 def register_fonts(font_dir=None):
-    folder = Path(font_dir) if font_dir else Path(__file__).resolve().parents[1]/'assets/fonts'
+    folder = Path(font_dir) if font_dir else ASSETS/'fonts'
     for name, file in FONT_FILES.items():
         path = folder/file
         if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != FONT_HASHES[file]:
             raise LayoutError(f'Нужен неизменённый шрифт макета {LAYOUT_VERSION}: {file}')
         pdfmetrics.registerFont(TTFont(name,str(path)))
+
+
+def draw_logo(c):
+    path = ASSETS/'brand/vbeton-logo.pdfpath'
+    if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != LOGO_HASH:
+        raise LayoutError('Нужен неизменённый векторный логотип ВБетон из гайдбука')
+    c.beginForm('VBetonLogo', 0, 0, LOGO_W, LOGO_H)
+    c.addLiteral(path.read_text(encoding='ascii'))
+    c.endForm()
+    scale = LOGO_WIDTH/LOGO_W
+    c.saveState()
+    c.translate(LOGO_X, PAPER_H-LOGO_TOP-LOGO_H*scale)
+    c.scale(scale, scale)
+    c.doForm('VBetonLogo')
+    c.restoreState()
 
 
 def text_box(c, text, x, y, width, height, size=9, color=INK, bold=False, center=False):
@@ -74,17 +71,12 @@ def text_box(c, text, x, y, width, height, size=9, color=INK, bold=False, center
     style=ParagraphStyle('fixed',fontName='BodyBold' if bold else 'Body',fontSize=size,
                          leading=size*1.28,textColor=colors.HexColor(color),alignment=TA_LEFT,
                          splitLongWords=True)
-    content=html.escape(str(text)).replace('\n','<br/>').replace('₽','<font name="BodySymbol">₽</font>')
+    content=html.escape(str(text)).replace('\n','<br/>')
     p=Paragraph(content,style)
     _,actual=p.wrap(width,height)
     if actual>height+.1:
         raise LayoutError(f'Поле фиксированного макета переполнено ({actual:.1f}>{height:.1f} pt): {str(text)[:80]}')
     p.drawOn(c,x,y+height-actual)
-
-
-def field(c, name, text, color=INK):
-    x,top,w,h,size,bold=SLOTS[name]
-    text_box(c,text,x,PAPER_H-top-h,w,h,size,color,bold)
 
 
 def rect(c,x,top,w,h,fill):
@@ -114,68 +106,171 @@ def amount(value):
     return compact(value)+' ₽'
 
 
+def label(c, x, top, text, size=9.5, bold=False, right=False, width=None):
+    text = str(text)
+    check_text(text)
+    font = 'BodyBold' if bold else 'Body'
+    length = stringWidth(text, font, size)
+    if width is not None and length > width+.1:
+        raise LayoutError(f'Поле фиксированного макета переполнено: {text[:80]}')
+    if right:
+        x -= length
+    if x < 35.9 or x+length > 559.1:
+        raise LayoutError(f'Текст выходит за поля A4: {text[:80]}')
+    c.setFillColor(colors.HexColor(INK))
+    c.setFont(font, size)
+    c.drawString(x, PAPER_H-top, text)
+
+
+def date_label(value):
+    return date.fromisoformat(value).strftime('%d.%m.%Y') if value else 'Дата не задана'
+
+
+def million(fact):
+    if fact.get('value') is None:
+        return 'Противоречие' if fact.get('status') == 'conflicting' else 'Нет данных'
+    scaled = Decimal(str(fact['value']))/Decimal('1000000')
+    value = format(scaled, 'f').rstrip('0') if scaled and abs(scaled)<Decimal('0.05') else f'{scaled:,.1f}'
+    value = value.replace(',', ' ').replace('.', ',')
+    return value+('*' if fact.get('reconstructed') else '')
+
+
+def period_label(period, year):
+    if not period:
+        return str(year)
+    start, end = (date.fromisoformat(period[k]) for k in ('start', 'end'))
+    if start.month == 1 and start.day == 1 and end.month == 12 and end.day == 31:
+        return f'{year} год'
+    if start.month == 1 and start.day == 1:
+        import calendar
+        if end.day == calendar.monthrange(end.year, end.month)[1]:
+            return f'{end.month} мес. {year}'
+    return f'по {end:%d.%m.%Y}'
+
+
 def render(data,destination,font_dir=None):
     result=analyze(data)
+    result['layout_version']=LAYOUT_VERSION
     register_fonts(font_dir)
     target=Path(destination);target.parent.mkdir(parents=True,exist_ok=True)
     fd,temporary=tempfile.mkstemp(suffix='.pdf',dir=str(target.parent));os.close(fd)
     try:
         c=Canvas(temporary,pagesize=(PAPER_W,PAPER_H),invariant=1,pageCompression=1)
-        c.setTitle('Заключение по новому займу — '+result['company']['name'])
-        c.setAuthor('Borrower Financial Analysis')
+        c.setTitle('Финансовый отчёт / '+result['company']['name'])
+        c.setAuthor('ВБетон')
         c.setSubject('Fixed layout '+LAYOUT_VERSION)
         rect(c,0,0,PAPER_W,PAPER_H,'#FFFFFF')
-        field(c,'brand','ФИНАНСЫ ЗАЁМЩИКА')
-        field(c,'kind','ПРЕДВАРИТЕЛЬНАЯ ОЦЕНКА ЗАЁМЩИКА')
-        rule(c,36,46,559)
-        demo=' / ВЫМЫШЛЕННЫЙ ПРИМЕР' if result['company'].get('fictional') else ''
-        field(c,'company',result['company']['name']+demo,MUTED)
-        field(c,'title','Заключение по новому займу')
-        rect(c,36,144,523,78,PALE);rect(c,36,144,3,78,BLUE)
-        field(c,'summary',result['conclusion'])
-        field(c,'coverage',f"Предварительный анализ • рассчитано {result['calculation_coverage']} показателей",MUTED)
-        definitions=[('amount','new_loan_amount','СУММА ЗАЙМА'),('rate','new_loan_rate_pct','ГОДОВЫХ'),('term','new_loan_term_months','СРОК')]
-        for slot,key,label in definitions:
-            val,refs=loan_fact(data,key)
-            display=amount(val) if slot=='amount' else 'Нет данных' if val is None else compact(val)+('%' if slot=='rate' else ' мес.')
-            # Missing-value font is a fixed design token, never an auto-fit rule.
-            if val is None:
-                x,top,w,h,_,_=SLOTS['loan_'+slot]
-                text_box(c,display,x,PAPER_H-top-h,w,h,15)
-            else:field(c,'loan_'+slot,display)
-            if slot=='term':
-                label += ' / ОСНОВНОЙ ДОЛГ В КОНЦЕ' if data.get('loan_repayment')=='bullet' else ' / ПО ГРАФИКУ' if data.get('loan_repayment')=='schedule' else ''
-            field(c,'loan_'+slot+'_label',label+(' ['+', '.join(refs)+']' if refs else ''),MUTED)
-        rule(c,36,319,559,INK,.9)
-        for key,label in [('title','ПОКАЗАТЕЛЬ'),('value','ЗНАЧЕНИЕ'),('note','ПРОЧТЕНИЕ')]:field(c,'head_'+key,label,MUTED)
-        for i,metric in enumerate(result['metrics']):
-            top=363+i*43
-            if i==4:rect(c,36,top-7,523,43,HIGHLIGHT)
-            text_box(c,metric['title'],36,PAPER_H-top-30,245,30,10)
-            val=metric['display'] if metric['value'] is not None else 'Нет данных'
-            text_box(c,val,292,PAPER_H-(top-4)-33,100,33,18 if metric['value'] is not None else 10,bold=True)
-            refs=' ['+', '.join(metric['sources'])+']' if metric['sources'] else ''
-            # The analytical limitation remains visible even when no ratio is available.
-            note=metric['note']+refs
-            text_box(c,note,412,PAPER_H-(top-1)-38,147,38,7.1,color=MUTED)
-            rule(c,36,top+31,559)
-        stress=result['stress']
-        field(c,'stress_title',f"Стресс: прибыль -{stress['earnings_drop_pct']:g}%")
-        if stress['interest_coverage'] is None:
-            x,top,w,h,_,_=SLOTS['stress_value']
-            text_box(c,'Нет данных',x,PAPER_H-top-h,w,h,15,color=MUTED)
-        else:field(c,'stress_value',f"{stress['interest_coverage']:.2f}×".replace('.',','),BLUE)
-        field(c,'stress_note','Покрытие процентов после займа; основной долг не включён. Условный сценарий, не прогноз.',MUTED)
-        rule(c,36,653,559,INK,.9)
-        field(c,'action_title','УСЛОВИЯ ДЛЯ ДАЛЬНЕЙШЕГО РАССМОТРЕНИЯ',BLUE)
-        lines=[*result['observations'],*result['questions']]
-        field(c,'actions','\n'.join(f'{i:02d}  {s}' for i,s in enumerate(lines,1)))
-        rule(c,36,756,559)
-        field(c,'sources','Источники: '+'; '.join(s['id']+': '+Path(s['file']).name for s in result['sources']),MUTED)
-        period=result['period']
-        meta=f"Проверка {result['assessment_date']} • Баланс {result['balance_date']} • Период {period['start']} — {period['end']}"
-        field(c,'limitations',meta+'\n'+' '.join(result['limitations']),MUTED)
-        field(c,'footer','ФИНАНСОВЫЙ АНАЛИЗ / '+LAYOUT_VERSION,MUTED)
+        draw_logo(c)
+        fictional=bool(result['company'].get('fictional'))
+        label(c,559,33,'ОБРАЗЕЦ / УСЛОВНЫЕ ДАННЫЕ' if fictional else 'ФИНАНСОВЫЙ АНАЛИЗ',8,True,True)
+        rule(c,36,56,559)
+        label(c,36,81,'Финансовый отчёт',22,True)
+        label(c,36,101,result['company']['name'],11,True,width=350)
+        label(c,559,101,'Дата анализа: '+date_label(result['assessment_date']),9.5,right=True)
+        rect(c,36,114,523,34,PALE);rect(c,36,114,3,34,BLUE)
+        text_box(c,result['conclusion'],48,PAPER_H-144,499,26,10.2,bold=True)
+        for x,key,title in [(36,'new_loan_amount','СУММА ЗАЙМА'),(209,'new_loan_rate_pct','СТАВКА ЗАЁМЩИКА'),(389,'new_loan_term_months','СРОК И ВОЗВРАТ')]:
+            value,_=loan_fact(data,key)
+            if value is None:
+                display='Нет данных'
+            elif key=='new_loan_amount':
+                display=amount(value)
+            elif key=='new_loan_rate_pct':
+                display=compact(value)+'% годовых'
+            else:
+                suffix={'bullet':' / основной долг в конце','schedule':' / по графику'}.get(data.get('loan_repayment'),' / порядок не задан')
+                display=compact(value)+' мес.'+suffix
+            label(c,x,165,title,7.7,True)
+            label(c,x,184,display,9.5 if x==389 else 12,True,width=170)
+        label(c,36,211,'Финансовое состояние',12.5,True)
+        label(c,559,211,'млн ₽',9,right=True)
+        history=result['report']['financial_history']
+        rect(c,36,222,523,20,PALE)
+        label(c,44,236,'Результаты',9,True)
+        for x,entry in zip((347,447,550),history):
+            star='*' if any(entry['facts'][k]['reconstructed'] for k,_ in FLOW_ROWS) else ''
+            label(c,x,236,period_label(entry['period'],entry['year'])+star,9,True,True,88)
+        for i,(key,title) in enumerate(FLOW_ROWS):
+            top=257+i*16
+            label(c,44,top,title,9.8)
+            for x,entry in zip((347,447,550),history):
+                fact=entry['facts'][key]
+                label(c,x,top,million(fact),9.5 if fact['value'] is not None else 8.5,right=True,width=88)
+            rule(c,36,top+5,559)
+        rect(c,36,302,523,20,PALE)
+        label(c,44,316,'Активы и обязательства',9,True)
+        for x,entry in zip((347,447,550),history):
+            star='*' if any(entry['facts'][k]['reconstructed'] for k,_ in STOCK_ROWS) else ''
+            label(c,x,316,date_label(entry['balance_date'])+star,9,True,True,88)
+        for i,(key,title) in enumerate(STOCK_ROWS):
+            top=337+i*16
+            if key=='equity':rect(c,36,top-11,523,16,PALE)
+            label(c,44,top,title,9.8,key=='equity',width=273)
+            for x,entry in zip((347,447,550),history):
+                fact=entry['facts'][key]
+                label(c,x,top,million(fact),9.5 if fact['value'] is not None else 8.5,key=='equity',True,88)
+            rule(c,36,top+5,559)
+        chart=result['report']['chart']
+        label(c,36,526,'Поступления и погашения',11.5,True)
+        period=chart['period']
+        caption=(date_label(period['start'])+'–'+date_label(period['end'])+' / млн ₽') if period else 'Период не задан'
+        label(c,36,541,caption,7.8,width=252)
+        ready=chart['bank_data_complete'] and all(chart['facts'][k]['value'] is not None for k,_ in CHART_ROWS)
+        values=[chart['facts'][k]['value']/1000000 for k,_ in CHART_ROWS] if ready else []
+        low=min([0]+values);high=max([0]+values)
+        span=high-low or 1
+        plot_x,plot_width=124,120
+        zero=plot_x+plot_width*(-low)/span
+        for i,(key,title) in enumerate(CHART_ROWS):
+            top=556+18*i
+            label(c,44,top+8,title,9)
+            if ready:
+                value=chart['facts'][key]['value']/1000000
+                rect(c,plot_x,top-1,plot_width,12,PALE)
+                endpoint=plot_x+plot_width*(value-low)/span
+                rect(c,min(zero,endpoint),top-1,abs(endpoint-zero),12,BLUE)
+                if low<0:
+                    c.setStrokeColor(colors.HexColor(INK));c.setLineWidth(.5)
+                    c.line(zero,PAPER_H-top+1,zero,PAPER_H-top-11)
+                label(c,288,top+8,million(chart['facts'][key]),9,True,True,40)
+            else:
+                label(c,288,top+8,'Неполные данные' if period and not chart['bank_data_complete'] else 'Нет данных',8,right=True,width=158)
+        debt=result['report']['current_debt']
+        label(c,310,526,'Кредитная нагрузка**',11.5,True)
+        label(c,310,541,('на '+date_label(debt['as_of']) if debt['as_of'] else 'Дата не задана')+' / основной долг, млн ₽',7.8,width=249)
+        for i,(key,title) in enumerate([
+            ('bank_principal','Банковские'),
+            ('unrelated_nonbank_principal','Небанковские, без связанных'),
+            ('related_party_principal','Связанные'),
+        ]):
+            top=566+23*i
+            label(c,318,top,title,9.2,width=174)
+            fact=debt['facts'][key]
+            label(c,550,top,million(fact),12 if fact['value'] is not None else 8.5,True,True,58)
+            rule(c,310,top+7,559)
+        label(c,36,656,'Влияние нового займа',12.5,True)
+        rect(c,36,666,523,20,PALE)
+        label(c,44,680,'Соотношение',8.5,True)
+        label(c,431,680,'До займа',8.5,True,True)
+        label(c,550,680,'После займа',8.5,True,True)
+        rect(c,446,686,113,88,PALE)
+        for i,row in enumerate(result['loan_comparison']['rows']):
+            top=710+i*40
+            label(c,44,top,row['title'],10,width=300)
+            stamp=(date_label(row['as_of']) if row['id']=='leverage' else
+                   'Последние 12 мес. / '+date_label(row['period']['start'])+'–'+date_label(row['period']['end'])
+                   if row['period'] else 'Последние 12 мес. / период не задан')
+            reasons=list(dict.fromkeys(cell['reason'] for cell in (row['before'],row['after']) if cell['value'] is None))
+            note=stamp+(' / '+('; '.join(reasons)) if reasons else '')
+            text_box(c,note,44,PAPER_H-top-19,300,17,7.3)
+            for x,cell in [(431,row['before']),(550,row['after'])]:
+                label(c,x,top+5,cell['display'],14 if cell['value'] is not None else 8.5,True,True,105)
+            rule(c,36,top+24,559)
+        if any(f['reconstructed'] for e in history for f in e['facts'].values()):
+            label(c,36,794,'* Данные текущего периода восстановлены из ОСВ.',7.5,width=523)
+        label(c,36,806,'** Основной долг на указанную дату, без учёта рассматриваемого нового займа.',7.5,width=523)
+        if fictional:
+            label(c,36,819,'Все данные вымышлены. Образец предназначен для проверки состава и читаемости.',7.5,width=523)
         c.showPage();c.save()
         check_file(temporary)
         os.replace(temporary,target)
@@ -183,6 +278,22 @@ def render(data,destination,font_dir=None):
         Path(temporary).unlink(missing_ok=True)
         raise
     return result
+
+
+def same_file(a, b):
+    return a.resolve() == b.resolve() or (a.exists() and b.exists() and a.samefile(b))
+
+
+def write_audit(path, result):
+    path=Path(path);path.parent.mkdir(parents=True,exist_ok=True)
+    content=json.dumps(result,ensure_ascii=False,indent=2,allow_nan=False)+'\n'
+    fd,temporary=tempfile.mkstemp(suffix='.json',dir=str(path.parent))
+    try:
+        with os.fdopen(fd,'w',encoding='utf-8') as stream:
+            stream.write(content)
+        os.replace(temporary,path)
+    finally:
+        Path(temporary).unlink(missing_ok=True)
 
 
 def main():
@@ -194,12 +305,12 @@ def main():
     args=parser.parse_args()
     try:
         source,output=Path(args.input_json).resolve(),Path(args.output_pdf).resolve()
-        if source==output or (args.audit_json and Path(args.audit_json).resolve() in {source,output}):
+        paths=[source,output]+([Path(args.audit_json).resolve()] if args.audit_json else [])
+        if any(same_file(a,b) for i,a in enumerate(paths) for b in paths[i+1:]):
             raise InputError('Пути исходника, PDF и аудита должны различаться')
         result=render(load_input(source),output,args.font_dir)
         if args.audit_json:
-            audit=Path(args.audit_json);audit.parent.mkdir(parents=True,exist_ok=True)
-            audit.write_text(json.dumps(result,ensure_ascii=False,indent=2,allow_nan=False)+'\n',encoding='utf-8')
+            write_audit(args.audit_json,result)
     except (InputError,LayoutError,ValueError,OSError,KeyError,TypeError) as exc:
         print(f'Ошибка: {exc}',file=sys.stderr);return 2
     print(str(output));return 0

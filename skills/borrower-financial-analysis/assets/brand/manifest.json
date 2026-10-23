@@ -1,0 +1,49 @@
+{
+  "guidebook": {
+    "file": "docs/brand/guidebook-vbeton.pdf",
+    "sha256": "8249334788a4d76761d68e0973bc68f53ce6d57d69b6f1bb4dc54c36ab7abb81",
+    "received_date": "2026-10-20"
+  },
+  "logo": {
+    "source_page": 4,
+    "file": "vbeton-logo.pdfpath",
+    "sha256": "33d4ebd4c516e49244922dd5c345d4ff163033693cc345c215f6ea501bcd043e",
+    "bounds": [
+      585.0041,
+      120.317
+    ],
+    "method": "Unchanged PDF vector paths; translation to origin and DeviceRGB operator normalization only."
+  },
+  "fonts": {
+    "source_url": "https://github.com/google/fonts/tree/main/ofl/robotoflex",
+    "source_sha256": "9b523f7d82593df0107173849ebb8c817471a1df4b4fb2c3cbf40cfd810c8281",
+    "tool": "fontTools 4.67.0",
+    "license": "SIL Open Font License 1.1",
+    "axes": {
+      "opsz": 14.0,
+      "GRAD": 0.0,
+      "wdth": 91,
+      "slnt": 0.0,
+      "XOPQ": 96.0,
+      "YOPQ": 79.0,
+      "XTRA": 468.0,
+      "YTUC": 712.0,
+      "YTLC": 514.0,
+      "YTAS": 750.0,
+      "YTDE": -203.0,
+      "YTFI": 738.0
+    },
+    "instances": [
+      {
+        "file": "RobotoFlex-Text.ttf",
+        "wght": 280,
+        "sha256": "1ea45867601ead14da44818408a8d6af5c28e643b345258ede8e3b2873bd21f8"
+      },
+      {
+        "file": "RobotoFlex-Heading.ttf",
+        "wght": 700,
+        "sha256": "751b033f8cc4fae744b18675dc777281a10a440fbda2711b0187cf3f6bb5a8da"
+      }
+    ]
+  }
+}

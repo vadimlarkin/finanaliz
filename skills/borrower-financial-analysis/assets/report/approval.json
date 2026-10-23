@@ -1,0 +1,78 @@
+{
+  "sample_version": "investor-one-page-1.0",
+  "approved_on": "2026-10-22",
+  "approval_scope": [
+    "report_composition",
+    "block_placement"
+  ],
+  "status": "approved_sample",
+  "renderer_status": "implemented_local",
+  "current_renderer_layout": "investor-one-page-2.2",
+  "fictional": true,
+  "pages": 1,
+  "page_size": "A4 portrait",
+  "reference": "../../references/approved-report.md",
+  "files": {
+    "investor-one-page-1.0.pdf": {
+      "sha256": "849c10c7bc1ccb25b5e968271323d46bdfeb4699472f885c5156453ae00c8cf1",
+      "bytes": 32501
+    },
+    "investor-one-page-1.0.png": {
+      "sha256": "4e9a50266ad3067577ad386ef67a28ff214889732c8301df01cf0a28c8e8082d",
+      "bytes": 207582
+    },
+    "investor-one-page-2.0.pdf": {
+      "sha256": "be7c1a52b19159602dc8f9ff81e4bde04b0162ae3744547e413a68897e1d605f",
+      "bytes": 32485
+    },
+    "investor-one-page-2.0.png": {
+      "sha256": "de5accc4bb571743a442fd46c86b264442c8952175ecdb068f75b38196a11738",
+      "bytes": 209225
+    },
+    "investor-one-page-2.0.input.json": {
+      "sha256": "c73493c6beb39d92f20ae4adda644f1cf99803b4822af350c451c2fabf774955",
+      "bytes": 18789
+    },
+    "synthetic-report-history.md": {
+      "sha256": "3592459d4bbc4849168a9f451f4199b75886bc83b79a3c471eec43576e9ae031",
+      "bytes": 4762
+    },
+    "investor-one-page-2.1.pdf": {
+      "sha256": "024552dd2b8f772ceeca23776a9b86bc1bb4c55004b6290528fee0b88e8e3065",
+      "bytes": 32859
+    },
+    "investor-one-page-2.1.png": {
+      "sha256": "ed4f5f43720667144795e030f56c38eeaa1c317ca45f14f359d75933b3288703",
+      "bytes": 189416
+    },
+    "investor-one-page-2.1.input.json": {
+      "sha256": "47dd50fe83ea3612c8da205b51d9dfaa722b4b2dee5d55db2c0ec121c1f85b24",
+      "bytes": 19969
+    },
+    "synthetic-current-debt-2.1.md": {
+      "sha256": "e42fb101f5db95ba6019a50e9f9a428f258ece25d8f5b101ea93fde0d4bef91a",
+      "bytes": 2014
+    },
+    "investor-one-page-2.2.pdf": {
+      "sha256": "5cb4596dc8d3b8a0d8ba6f23f7fe1692c136ccc659e48aad76e513f8248fbc19",
+      "bytes": 32883
+    },
+    "investor-one-page-2.2.png": {
+      "sha256": "94d178dc5cccaf43dc20e320daf5669fcf52b532838a8133be5f31431546baf1",
+      "bytes": 191587
+    },
+    "investor-one-page-2.2.input.json": {
+      "sha256": "d06fc22de1b981a436d3ba22d47ae4aae1e8f35ee91ebf5e7d295d3822e31a26",
+      "bytes": 21011
+    },
+    "synthetic-interest-ltm-2.2.md": {
+      "sha256": "c77255764f3b6991d62d4f0e8b7542e911a6311838905b878210cfcd86da706c",
+      "bytes": 3360
+    }
+  },
+  "generated_reference_input": "investor-one-page-2.2.input.json",
+  "source_example": "examples/investor.json",
+  "implementation_validation": "../../../../docs/validation.md",
+  "current_revision_status": "requested_revision_preview",
+  "current_revision_on": "2026-10-22"
+}
