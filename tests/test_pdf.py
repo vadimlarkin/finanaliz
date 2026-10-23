@@ -19,6 +19,28 @@ except ImportError:
 
 @unittest.skipIf(render_dashboard is None, 'PDF checks require reportlab and pypdf')
 class PdfContract(unittest.TestCase):
+    def test_report_uses_vbeton_palette_embedded_roboto_and_vector_logo(self):
+        data = json.loads((ROOT/'examples/operating.json').read_text())
+        with tempfile.TemporaryDirectory() as folder:
+            output = Path(folder)/'report.pdf'
+            render_dashboard.render(data, output)
+            pdf = PdfReader(output)
+            page = pdf.pages[0]
+            allowed = {(0.0, .4471, .9373), (.9137, .9608, 1.0),
+                       (.1373, .1569, .1765), (1.0, 1.0, 1.0)}
+            for args, op in ContentStream(page.get_contents(), pdf).operations:
+                if op in {b'rg', b'RG'}:
+                    self.assertIn(tuple(round(float(v), 4) for v in args), allowed)
+            fonts = [font.get_object() for font in page['/Resources']['/Font'].values()]
+            embedded = [font for font in fonts if '/FontDescriptor' in font]
+            self.assertEqual(len(embedded), 2)
+            self.assertTrue(all('RobotoFlex' in str(font['/BaseFont']) for font in embedded))
+            self.assertTrue(all('/FontFile2' in font['/FontDescriptor'] for font in embedded))
+            forms = page['/Resources'].get('/XObject', {})
+            logos = [form.get_object() for name, form in forms.items() if 'VBetonLogo' in name]
+            self.assertEqual(len(logos), 1)
+            self.assertEqual(logos[0]['/Subtype'], '/Form')
+
     def test_forbidden_principal_jargon_blocks_release_and_preserves_existing_pdf(self):
         data = json.loads((ROOT/'examples/operating.json').read_text())
         data['context']['observations'] = ['Нужно проверить тело долга.']
@@ -31,8 +53,10 @@ class PdfContract(unittest.TestCase):
 
     def test_fixed_approved_geometry_is_independent_of_financial_case(self):
         # Independently specified rectangles of the selected A4 mockup.
-        expected = [(0, 0, 595.28, 841.89), (36, 619.89, 523, 78),
-                    (36, 619.89, 3, 78), (36, 270.89, 523, 43)]
+        expected = [(0, 0, 595.28, 841.89), (36, 693.89, 523, 34),
+                    (36, 693.89, 3, 34), (36, 599.89, 523, 20),
+                    (36, 519.89, 523, 20), (36, 387.89, 523, 16),
+                    (36, 155.89, 523, 20), (446, 67.89, 113, 88)]
         with tempfile.TemporaryDirectory() as folder:
             for name in ['operating', 'risk', 'incomplete', 'intermediary']:
                 data = json.loads((ROOT/'examples'/f'{name}.json').read_text())
@@ -43,10 +67,11 @@ class PdfContract(unittest.TestCase):
                               for args, op in ContentStream(pdf.pages[0].get_contents(), pdf).operations
                               if op == b're']
                 self.assertEqual(rectangles, expected, name)
-                expected_anchors = {'Заключение по новому займу': (36, 723.89, 27),
-                                    'ПОКАЗАТЕЛЬ': (36, 502.89, 7),
-                                    'ЗНАЧЕНИЕ': (292, 502.89, 7),
-                                    'ПРОЧТЕНИЕ': (412, 502.89, 7)}
+                expected_anchors = {'Финансовый отчёт': (36, 760.89, 22),
+                                    'Финансовое состояние': (36, 630.89, 12.5),
+                                    'Поступления и погашения': (36, 315.89, 11.5),
+                                    'Кредитная нагрузка**': (310, 315.89, 11.5),
+                                    'Влияние нового займа': (36, 185.89, 12.5)}
                 actual = {}
                 def collect(text, cm, tm, font, size):
                     label = text.strip()
@@ -80,8 +105,8 @@ class PdfContract(unittest.TestCase):
             output = Path(folder)/'report.pdf'
             render_dashboard.render(data, output)
             text = PdfReader(str(output)).pages[0].extract_text()
-            for label in ['Заключение по новому займу', 'ПОКАЗАТЕЛЬ', 'ЗНАЧЕНИЕ',
-                          'ПРОЧТЕНИЕ', 'УСЛОВИЯ ДЛЯ ДАЛЬНЕЙШЕГО РАССМОТРЕНИЯ']:
+            for label in ['Финансовый отчёт', 'Соотношение', 'До займа',
+                          'После займа', 'Финансовое состояние', 'Поступления и погашения']:
                 self.assertIn(label, text)
             self.assertNotIn('КАК ЧИТАТЬ ДАТЧИКИ', text)
 
@@ -90,19 +115,20 @@ class PdfContract(unittest.TestCase):
             for name in ['operating', 'risk', 'incomplete', 'intermediary']:
                 data = json.loads((ROOT/'examples'/f'{name}.json').read_text())
                 output = Path(folder)/(name+'.pdf')
-                render_dashboard.render(data, output)
+                audit = render_dashboard.render(data, output)
                 pdf = PdfReader(str(output))
                 self.assertEqual(len(pdf.pages), 1)
                 text = pdf.pages[0].extract_text()
-                self.assertIn('ФИНАНСЫ ЗАЁМЩИКА', text)
-                self.assertIn('ВЫМЫШЛЕННЫЙ ПРИМЕР', text)
-                self.assertIn('[S1', text)
+                self.assertIn('Финансовый отчёт', text)
+                self.assertIn('УСЛОВНЫЕ ДАННЫЕ', text)
+                self.assertNotIn('[S1', text)
+                self.assertTrue(any(s['id']=='S1' for s in audit['sources']))
                 self.assertNotIn('\ufffd', text)
                 self.assertEqual(round(float(pdf.pages[0].mediabox.width)), 595)
 
     def test_overflow_fails_without_creating_or_replacing_a_pdf(self):
         data = json.loads((ROOT/'examples/operating.json').read_text())
-        data['context']['observations'] = ['Very long disclosure '*500]
+        data['company']['name'] = 'Очень длинное наименование заёмщика '*100
         with tempfile.TemporaryDirectory() as folder:
             path = Path(folder)/'report.pdf'
             path.write_bytes(b'existing result')

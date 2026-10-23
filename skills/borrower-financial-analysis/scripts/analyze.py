@@ -12,7 +12,7 @@ from decimal import Decimal, InvalidOperation
 from pathlib import Path
 from check_terminology import check_payload
 
-VERSION = '1.0.0'
+VERSION = '1.3.1'
 FLOW = {
     'operating_profit', 'interest_expense', 'profit_before_tax',
     'one_off_net_income', 'operating_cashflow', 'cash_interest_paid',
@@ -57,7 +57,7 @@ def validate(data):
         raise InputError('schema_version должна быть 1.0')
     allowed = {'schema_version', 'company', 'assessment_date', 'balance_date',
                'period', 'currency', 'facts', 'sources', 'loan_repayment',
-               'stress', 'context', 'loan_interest_basis'}
+               'stress', 'context', 'loan_interest_basis', 'report'}
     if set(data) - allowed:
         raise InputError(f'Неизвестные поля: {sorted(set(data)-allowed)}')
     company = data.get('company', {})
@@ -138,6 +138,9 @@ def validate(data):
         raise InputError('loan_repayment: bullet, schedule или unknown')
     if data.get('loan_interest_basis', 'unknown') not in {'simple_monthly', 'schedule', 'unknown'}:
         raise InputError('loan_interest_basis: simple_monthly, schedule или unknown')
+    if (data.get('loan_repayment') == 'schedule' and val('new_loan_rate_pct') == 0
+            and val('new_loan_interest_12m') is not None and val('new_loan_interest_12m') > 0):
+        raise InputError('Нулевая ставка противоречит положительным процентам по графику нового займа')
 
 
 def analyze(data):
@@ -235,7 +238,7 @@ def analyze(data):
            'Исторический поток до капзатрат; это не прогноз и не DSCR.')
 
     start, end = (day(data['period'][k], k) for k in ('start', 'end'))
-    annual = (end-start).days+1 in {365, 366}
+    annual = start == date(start.year, 1, 1) and end == date(start.year, 12, 31)
     newkeys = earnings_keys+['interest_expense', 'new_loan_amount', 'new_loan_term_months', 'new_loan_fees_12m']
     if data.get('loan_repayment') == 'bullet':
         newkeys += ['new_loan_rate_pct']
@@ -312,6 +315,79 @@ def analyze(data):
             'limitations': list(dict.fromkeys(limitations)), 'sources': data['sources'],
             'new_interest_12m': float(new_interest) if new_interest is not None else None,
             'scale_notice': 'Цветовые зоны — авторские ориентиры предварительной проверки, не нормативы и не рейтинг.'}
+    from report_data import prepare_report
+    result['report'] = prepare_report(data)
+    def comparison_cell(val, keys, reason, facts=None):
+        source_facts = facts if facts is not None else data['facts']
+        def accepted(key):
+            fact = source_facts.get(key, {})
+            return fact.get('status') in ACCEPTED and fact.get('value') is not None
+        missing = [key for key in keys if not accepted(key)]
+        conflicting = [key for key in keys if source_facts.get(key, {}).get('status') == 'conflicting']
+        if val is not None and (not val.is_finite() or not math.isfinite(float(val))):
+            raise InputError('Сравнение до и после займа: число вне диапазона')
+        return {'value': float(val) if val is not None else None,
+                'display': f'{val:.2f}'.replace('.', ',') if val is not None else 'Противоречие' if conflicting else 'Нет данных' if missing else 'Не применимо',
+                'status': 'available' if val is not None else 'conflicting' if conflicting else 'missing' if missing else 'not_applicable',
+                'missing': missing, 'conflicting': conflicting,
+                'sources': sorted({s for key in keys if accepted(key) for s in source_facts[key].get('sources', [])}),
+                'reason': '' if val is not None else 'Противоречивые исходные данные' if conflicting else 'Нет исходных данных' if missing else reason}
+
+    interest_keys = earnings_keys+['interest_expense']
+    ltm = result['report']['interest_ltm']
+    interest_facts = dict(ltm['facts'])
+    def interest_value(key):
+        fact = interest_facts.get(key, {})
+        return number(fact['value'], key) if fact.get('status') in ACCEPTED and fact.get('value') is not None else None
+    interest_ready = all(interest_value(key) is not None for key in interest_keys)
+    ltm_earnings = (interest_value('operating_profit') if model=='operating' else
+                    interest_value('profit_before_tax')+interest_value('interest_expense')-interest_value('one_off_net_income')
+                    if interest_ready else None)
+    old_interest = interest_value('interest_expense')
+    before_interest = ltm_earnings/old_interest if interest_ready and old_interest > 0 else None
+    added_keys = ['new_loan_amount','new_loan_term_months']+(['new_loan_rate_pct'] if data.get('loan_repayment') == 'bullet' else ['new_loan_interest_12m'])
+    added_interest = None
+    for key in added_keys:
+        interest_facts[key] = data['facts'].get(key, {})
+    if known_loan and has(added_keys):
+        if value('new_loan_amount') > 0 and value('new_loan_term_months') > 0:
+            added_interest = (value('new_loan_amount')*value('new_loan_rate_pct')/100*min(value('new_loan_term_months'),Decimal('12'))/12
+                              if data['loan_repayment']=='bullet' else value('new_loan_interest_12m'))
+    after_interest = None
+    if interest_ready and added_interest is not None and old_interest+added_interest > 0:
+        after_interest = ltm_earnings/(old_interest+added_interest)
+    after_reason = ('Не задан расчёт процентов' if added_interest is None else 'Проценты равны нулю')
+    leverage_keys = ['interest_bearing_debt','equity']
+    current_debt = result['report']['current_debt']
+    leverage_facts = dict(current_debt['facts'] if current_debt['provided'] else data['facts'])
+    new_debt_keys = ['new_loan_amount']+(['new_loan_rate_pct'] if value('new_loan_rate_pct') is not None else ['new_loan_interest_12m'])
+    for key in new_debt_keys:
+        leverage_facts[key] = data['facts'].get(key, {})
+    def leverage_value(key):
+        fact = leverage_facts.get(key, {})
+        return number(fact['value'], key) if fact.get('status') in ACCEPTED and fact.get('value') is not None else None
+    debt, capital = (leverage_value(key) for key in leverage_keys)
+    before_leverage = debt/capital if debt is not None and capital is not None and capital>0 else None
+    # A zero contractual rate is explicit evidence that the proposed loan is interest free.
+    bears_interest = (value('new_loan_rate_pct') > 0 if value('new_loan_rate_pct') is not None
+                      else True if value('new_loan_interest_12m') is not None and value('new_loan_interest_12m')>0 else None)
+    after_leverage = ((debt+(value('new_loan_amount') if bears_interest else 0))/capital
+                      if before_leverage is not None and value('new_loan_amount') is not None and bears_interest is not None else None)
+    result['loan_comparison'] = {
+        'assumptions': ['Новый заём выдан полностью; прочий долг не изменился.',
+                        'Прибыль и капитал сохраняются на исходном уровне.',
+                        'Новые проценты за первые 12 месяцев; комиссии учитываются только в служебных расчётах.'],
+        'new_interest_only_12m': float(added_interest) if added_interest is not None else None,
+        'rows': [
+            {'id':'interest_coverage', 'title':'Прибыль от продаж / проценты' if model=='operating' else 'Заработок до фондирования / проценты',
+             'period':ltm['period'],
+             'before':comparison_cell(before_interest,interest_keys,'Проценты равны нулю',interest_facts),
+             'after':comparison_cell(after_interest,interest_keys+added_keys,after_reason,interest_facts)},
+            {'id':'leverage', 'title':'Процентный долг / капитал','as_of':current_debt['as_of'] if current_debt['provided'] else data['balance_date'],
+             'before':comparison_cell(before_leverage,leverage_keys,'Капитал ≤ 0',leverage_facts),
+             'after':comparison_cell(after_leverage,leverage_keys+new_debt_keys,
+                                      'Не подтверждена процентность нового займа' if bears_interest is None else 'Капитал ≤ 0',leverage_facts)},
+        ]}
     check_payload(result)
     return result
 
