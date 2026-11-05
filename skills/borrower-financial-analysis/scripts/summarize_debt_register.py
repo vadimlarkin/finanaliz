@@ -138,7 +138,7 @@ def validate(data):
 
 
 def payment_data(contracts, blocked):
-    eligible=[];missing=[];dated=[];patch=[]
+    eligible=[];missing=[];dated=[];patch=[];limitations=[]
     for contract in contracts:
         row=contract['accepted'];uid=contract['id']
         monthly=row.get('monthly_payment') if row else None
@@ -152,12 +152,23 @@ def payment_data(contracts, blocked):
         else:
             missing.append(uid)
         rendered=[]
+        usable_base=bool(fact and fact['value'] is not None)
+        replacement_months={event['date'][:7] for event in events if event['treatment']=='replace'}
         for event in sorted(events,key=lambda p:(p['date'],p['id'])):
             dated.append({'contract_id':uid,'record_id':row['id'],**event,
                           'replaces_monthly_base':True if event['treatment']=='replace' else False if event['treatment']=='additional' else None,
                           'monthly_base_known':valid,'base_frequency':monthly['frequency'] if monthly else None,
                           'base_as_of':monthly.get('as_of') if monthly else None})
-            if event['treatment']!='unknown' and uid not in blocked:
+            reason=None
+            if uid in blocked:
+                reason='Договор требует решения; зависимый платёж не передан в числовую вставку.'
+            elif unresolved:
+                reason='Неизвестно правило отдельного платежа договора; зависимые платежи не переданы в числовую вставку.'
+            elif event['treatment']=='additional' and not usable_base and event['date'][:7] not in replacement_months:
+                reason='Месячная база неизвестна; дополнительный платёж не передан как полный итог месяца.'
+            if reason:
+                limitations.append({'contract_id':uid,'payment_id':event['id'],'reason':reason})
+            else:
                 rendered.append({'id':uid+':'+event['id'],'date':event['date'],'treatment':event['treatment'],
                                  'amount':{'value':pdf_number(event['amount']),'status':'confirmed' if pdf_number(event['amount']) is not None else 'missing','sources':event['sources']}})
         patch.append({'id':uid,'monthly_payment':fact if not unresolved else None,'payments':rendered})
@@ -166,7 +177,7 @@ def payment_data(contracts, blocked):
                               'known_subtotal':subtotal,'frequency':'monthly','includes_dated_payments':False,
                               'known_contracts':[p['contract_id'] for p in eligible],'missing_contracts':missing,
                               'entries':eligible},
-           'dated_payments':dated,
+           'dated_payments':dated,'patch_limitations':limitations,
            'exact_future_schedule':False}
     return guide,{'contracts':patch}
 

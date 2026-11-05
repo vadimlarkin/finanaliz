@@ -45,3 +45,23 @@ git diff --check
 Сценарии подходящего запроса, похожего запроса вне области и неполных/противоречивых данных проверены чтением инструкции и описаны отдельно в reference. Модельные прогоны не выполнялись. Проверка совместимости является вызовом существующих prepare и credit_load, без создания или осмотра PDF. Установленная версия и макеты сохранены.
 
 SKILL.md не изменён. Контроллеру нужен указатель: при расчёте по проверенному реестру обязательств прочитать `references/local-debt-register.md` и вызвать `scripts/summarize_debt_register.py`.
+
+
+## Исправление по независимой приёмке
+
+Spec-проверка коммита `c0e08b5c6cf9e8b72b554ca0d2c398af9033e4cd` обнаружила P2. Когда адаптер сохранял additional 5.00 при неизвестной базе или при другом событии с неизвестным treatment, действующий prepare_credit_load возвращал полный calculated 5.00 и пустой unknown_contracts. Рабочий свод сохранял неизвестность, но числовая вставка её теряла.
+
+По diagnosing-bugs построен минимальный цикл CLI и настоящего prepare_credit_load: один договор, один additional 5.00, неизвестная база. Красная проверка отдельно воспроизвела missing-base, undated-base, nonmonthly-base и monthly 10.01 с unknown-treatment 40.00 и additional 5.00. Во всех четырёх вариантах ошибочный итог был 5.00. Проверялись гипотезы потери неизвестной базы в адаптере, удаления ограничения unknown-treatment и недоступной числовой базы после преобразования для формы. Подтвердилась потеря ограничения при передаче additional в действующий расчёт, который складывает его с отсутствующей базой.
+
+Исправление ограничено адаптером. Договор с неизвестным treatment сохраняет неизвестную базу и не передаёт зависимые события в числовую вставку. При неизвестной базе additional удерживается, пока тот же месяц не задан явным replace. События, суммы, даты и исходные правила остаются в guide; patch_limitations раскрывает каждый удержанный платёж и причину. Известный replace при неизвестной базе продолжает давать 5.00 в соответствующем месяце. Новые поля формы не добавлялись, движок и макет не менялись.
+
+Целевые тесты: 14 тестов CLI и артефактов, OK, 1.505 секунды. Регрессионные сценарии проходят через настоящий prepare_credit_load. Исходный пример контроллера повторён после исправления: total_rub null, status missing, unknown_contracts [A]. Результат оставлен в work/controller-06/controller-unknown-events-fixed.json, аудит нагрузки в controller-unknown-events-fixed-load.json; исходные материалы контроллера сохранены. Отдельный модельный прогон и PDF не создавались.
+
+Команды проверки исправления:
+
+```sh
+/Users/vadimlarkin/Developer/finanaliz-report-composition-20261022/.venv/bin/python -m unittest discover -s tests -p test_debt_register.py
+/Users/vadimlarkin/Developer/finanaliz-report-composition-20261022/.venv/bin/python skills/borrower-financial-analysis/scripts/summarize_debt_register.py work/controller-06/controller-unknown-events.json work/controller-06/controller-unknown-events-fixed.json
+/Users/vadimlarkin/Developer/finanaliz-report-composition-20261022/.venv/bin/python skills/borrower-financial-analysis/scripts/check_terminology.py docs/controller/06-implementation.md skills/borrower-financial-analysis/references/local-debt-register.md skills/borrower-financial-analysis/scripts/summarize_debt_register.py tests/test_debt_register.py work/controller-06/controller-unknown-events-fixed.json work/controller-06/controller-unknown-events-fixed-load.json
+git diff --check
+```

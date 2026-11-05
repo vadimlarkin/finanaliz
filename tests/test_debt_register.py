@@ -212,6 +212,42 @@ class DebtRegisterCLI(unittest.TestCase):
             self.assertEqual(proc.returncode,2,proc.stderr)
             self.assertEqual(json.loads(output.read_text())['issues'][0]['code'],'invalid_input')
 
+    def test_unknown_contract_components_stay_unknown_in_current_credit_load(self):
+        sys.path.insert(0,str(ROOT/'skills/borrower-financial-analysis/scripts'))
+        from ip_credit_load import prepare_credit_load
+        for defect in ('unknown-treatment','missing-base','undated-base','nonmonthly-base'):
+            with self.subTest(defect=defect):
+                row=self.record()
+                row['payments']=[{'id':'extra','date':'2026-12-15','amount':'5.00','treatment':'additional','sources':['BKI']}]
+                if defect=='unknown-treatment':
+                    row['payments'].append({'id':'unclear','date':'2026-12-15','amount':'40.00','treatment':'unknown','sources':['BKI']})
+                elif defect=='missing-base':
+                    row['monthly_payment']=None
+                elif defect=='undated-base':
+                    row['monthly_payment']['as_of']=None
+                else:
+                    row['monthly_payment']['frequency']='quarterly'
+                data=self.case();data['records']=[row]
+                code,result,_=self.run_cli(data)
+                self.assertEqual(code,0,result)
+                load=prepare_credit_load({**result['pdf_patch']['credit_load'],'start_month':'2026-12','start_basis':'user_scenario','start_sources':['BKI']},1,'2026-11-05',{'BKI'})
+                self.assertIsNone(load['total_rub'],load)
+                self.assertEqual(load['months'][0]['unknown_contracts'],['A'])
+                self.assertEqual(result['payment_guide']['dated_payments'][0]['amount'],'5.00')
+                self.assertTrue(result['payment_guide']['patch_limitations'])
+
+    def test_known_replacement_with_unknown_base_stays_available(self):
+        sys.path.insert(0,str(ROOT/'skills/borrower-financial-analysis/scripts'))
+        from ip_credit_load import prepare_credit_load
+        row=self.record();row['monthly_payment']=None
+        row['payments']=[{'id':'replacement','date':'2026-12-15','amount':'5.00','treatment':'replace','sources':['BKI']}]
+        data=self.case();data['records']=[row]
+        code,result,_=self.run_cli(data)
+        self.assertEqual(code,0,result)
+        load=prepare_credit_load({**result['pdf_patch']['credit_load'],'start_month':'2026-12','start_basis':'user_scenario','start_sources':['BKI']},1,'2026-11-05',{'BKI'})
+        self.assertEqual(load['total_rub'],'5.00')
+        self.assertEqual(load['months'][0]['unknown_contracts'],[])
+
 
 if __name__ == '__main__':
     unittest.main()
