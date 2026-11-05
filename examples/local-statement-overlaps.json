@@ -1,0 +1,73 @@
+{
+  "schema_version": "local-statement-overlaps-1.0",
+  "loads": [
+    {
+      "id": "L1",
+      "source": "S1",
+      "sha256": "86446af0f3df9d83e1ad945a8aebb8cd043ecb6be04d6a324efd92db2626080e"
+    },
+    {
+      "id": "L2",
+      "source": "S2",
+      "sha256": "86446af0f3df9d83e1ad945a8aebb8cd043ecb6be04d6a324efd92db2626080e"
+    }
+  ],
+  "cashflow": {
+    "schema_version": "local-cashflow-1.0",
+    "period": {
+      "start": "2026-01-01",
+      "end": "2026-02-28"
+    },
+    "accounts": [
+      {
+        "account": "A",
+        "owner_id": "OWNER"
+      }
+    ],
+    "coverage": {
+      "complete": true
+    },
+    "sources": [
+      {
+        "id": "S1",
+        "file": "examples/local-statement-overlaps-source.csv",
+        "locator": "строка 2"
+      },
+      {
+        "id": "S2",
+        "file": "examples/local-statement-overlaps-source.csv",
+        "locator": "строка 2"
+      }
+    ],
+    "operations": [
+      {
+        "id": "a",
+        "source": "S1",
+        "page": "2",
+        "load_id": "L1",
+        "source_row": "2",
+        "account": "A",
+        "date": "2026-01-15",
+        "debit": "0.00",
+        "credit": "100.10",
+        "purpose": "Оплата по договору",
+        "category": "revenue",
+        "category_status": "confirmed"
+      },
+      {
+        "id": "b",
+        "source": "S2",
+        "page": "2",
+        "load_id": "L2",
+        "source_row": "2",
+        "account": "A",
+        "date": "2026-01-15",
+        "debit": "0.00",
+        "credit": "100.10",
+        "purpose": "Оплата по договору",
+        "category": "revenue",
+        "category_status": "confirmed"
+      }
+    ]
+  }
+}
