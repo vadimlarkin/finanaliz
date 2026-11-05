@@ -17,8 +17,8 @@
 
 | Тикет | Статус | Зависимости | Следующее действие |
 | --- | --- | --- | --- |
-| 01 | ready-for-agent | нет | назначить Cash countula |
-| 05 | ready-for-agent | нет | назначить Pdf houdini |
+| 01 | in-progress | нет | назначить Cash countula |
+| 05 | in-progress | нет | назначить Pdf houdini |
 | 06 | ready-for-agent | нет | после свободного места |
 | 07 | ready-for-agent | нет | после свободного места |
 | 02 | ready-for-agent | 01 | ожидание |
@@ -28,7 +28,10 @@
 
 ## Незавершённая работа
 
-Назначения подготавливаются. Модель исполнителей наследуется, точное имя unknown. Изоляция отдельными Git worktree.
+| Тикет | Имя и ID | Worktree и ветка | База | Статус |
+| --- | --- | --- | --- | --- |
+| 01 | Cash countula, `/root/cash_countula`, модель inherited/unknown | местный `/Users/vadimlarkin/Developer/finanaliz-cash-countula`, `controller/01-cashflow` | `e0e6c3a3a473cabf1c178d2dee0966af1e33ce67` | running |
+| 05 | Pdf houdini, `/root/pdf_houdini`, модель inherited/unknown | местный `/Users/vadimlarkin/Developer/finanaliz-pdf-houdini`, `controller/05-pdf-cache` | `e0e6c3a3a473cabf1c178d2dee0966af1e33ce67` | running |
 
 ## Проверки и приёмка
 
@@ -36,4 +39,4 @@
 
 ## Итоги, блокировки и передача
 
-Тикеты скопированы из общей папки без изменения. Неустранимых блокировок нет. Следующее действие: создать worktree и назначить 01 и 05.
+Тикеты скопированы из общей папки без изменения. Неустранимых блокировок нет. Следующее действие: принять каждый готовый результат отдельно. Происхождение тикетов: `docs/controller/provenance.md`.
