@@ -297,3 +297,41 @@ class StatementOverlapsCLI(unittest.TestCase):
                 self.assertEqual(source.read_bytes(),before_source)
                 self.assertEqual(export.read_bytes(),before_export)
                 self.assertTrue(proc.stderr.strip())
+
+    def test_missing_bank_id_cannot_bridge_conflicting_ids_into_clean_auto_group(self):
+        data=self.case()
+        data['cashflow']['operations'][0]['bank_operation_id']='BANK-1'
+        data['cashflow']['operations'].append(self.row('c','S2','L2',bank_operation_id='BANK-2'))
+        code,result,_=self.cli(data)
+        self.assertEqual(code,2)
+        self.assertFalse(result['clean'])
+        self.assertIsNone(result['summary'])
+        self.assertIsNone(result['provisional_summary']['pdf_patch'])
+        self.assertEqual(len(result['registry']['operations']),3)
+        self.assertEqual(result['confirmed_duplicates'],[])
+        conflict=next(item for item in result['unresolved_matches'] if item['code']=='identity_conflict')
+        self.assertEqual(conflict['ids'],['a','c'])
+        self.assertIn('bank_operation_id',conflict['differing_fields'])
+        self.assertEqual(result['raw_operations'],data['cashflow']['operations'])
+        data['decisions']=[{'ids':['a','c'],'action':'duplicate','keep_id':'a',
+                            'reason':'Редакция BANK-1 сверена, BANK-2 ошибочна',
+                            'fingerprints':{uid:result['operation_fingerprints'][uid] for uid in ['a','c']}}]
+        code,resolved,_=self.cli(data)
+        self.assertEqual(code,0)
+        self.assertEqual(resolved['summary']['totals']['credit']['value'],'100.10')
+        self.assertEqual(resolved['registry']['operations'][0]['bank_operation_id'],'BANK-1')
+        self.assertEqual(len(resolved['lineage'][0]['appearances']),3)
+
+    def test_all_appearances_of_same_local_id_must_have_consistent_known_bank_id(self):
+        for bank_ids in [('BANK-1',None,'BANK-2'),(None,'BANK-1','BANK-2'),('BANK-1','BANK-2',None)]:
+            with self.subTest(bank_ids=bank_ids):
+                data=self.case()
+                data['cashflow']['operations']=[self.row('a'),self.row('a','S2','L2'),self.row('a','S2','L2')]
+                for row,bank_id in zip(data['cashflow']['operations'],bank_ids):
+                    if bank_id:row['bank_operation_id']=bank_id
+                code,result,_=self.cli(data)
+                self.assertEqual(code,2)
+                self.assertFalse(result['clean'])
+                self.assertIsNone(result.get('summary'))
+                self.assertEqual(result['issues'][0]['code'],'invalid_input')
+                self.assertTrue(result['issues'][0]['message'])

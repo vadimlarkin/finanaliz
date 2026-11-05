@@ -61,7 +61,7 @@ def validate_input(data):
         if load['source'] in source_versions and source_versions[load['source']]!=load['sha256']:
             raise ValueError('Один source не может обозначать разные версии исходника')
         loads[load['id']]=load;source_versions[load['source']]=load['sha256']
-    appearances={}
+    appearances={};known_bank_ids={}
     for row in cashflow['operations']:
         if not isinstance(row.get('load_id'),str) or row['load_id'] not in loads or loads[row['load_id']]['source']!=row['source']:
             raise ValueError('Операция требует свою объявленную загрузку с тем же source: '+row['id'])
@@ -69,11 +69,15 @@ def validate_input(data):
             raise ValueError('Нужен точный source_row операции: '+row['id'])
         if 'bank_operation_id' in row and (not isinstance(row['bank_operation_id'],str) or not row['bank_operation_id'].strip()):
             raise ValueError('bank_operation_id должен быть непустой строкой: '+row['id'])
+        if row.get('bank_operation_id'):
+            previous_bank_id=known_bank_ids.setdefault(row['id'],row['bank_operation_id'])
+            if previous_bank_id!=row['bank_operation_id']:
+                raise ValueError('Все представления локального ID требуют согласованного bank_operation_id: '+row['id'])
         if row['id'] in appearances:
             previous=appearances[row['id']]
-            if (loads[row['load_id']]['sha256'],row['source_row'],semantic(row)) != (loads[previous['load_id']]['sha256'],previous['source_row'],semantic(previous)) or (row.get('bank_operation_id') and previous.get('bank_operation_id') and row['bank_operation_id']!=previous['bank_operation_id']):
+            if (loads[row['load_id']]['sha256'],row['source_row'],semantic(row)) != (loads[previous['load_id']]['sha256'],previous['source_row'],semantic(previous)):
                 raise ValueError('Повтор ID допустим только для неизменной строки того же исходника: '+row['id'])
-        appearances[row['id']]=row
+        appearances.setdefault(row['id'],row)
     if not isinstance(data.get('decisions',[]),list):
         raise ValueError('decisions: требуется массив')
     ids={row['id'] for row in cashflow['operations']};seen=set()
@@ -172,16 +176,24 @@ def reconcile(data):
     for uid in preferred:
         selected_groups.setdefault(root(uid),set()).add(uid)
     conflicts.extend(sorted(values) for values in selected_groups.values() if len(values)>1)
-    if conflicts:
-        issues.append({'code':'conflicting_decisions','groups':conflicts,
-                       'message':'Различение внутри группы повторов или разные keep_id требуют единого решения.'})
+    identity_groups=sorted({tuple(sorted(row['id'] for row in rows if root(row['id'])==root(candidate['ids'][0])))
+                            for candidate in candidates if candidate['code']=='identity_conflict'
+                            and root(candidate['ids'][0])==root(candidate['ids'][1])})
+    if conflicts or identity_groups:
+        if conflicts:
+            issues.append({'code':'conflicting_decisions','groups':conflicts,
+                           'message':'Различение внутри группы повторов или разные keep_id требуют единого решения.'})
+        if identity_groups:
+            issues.append({'code':'inconsistent_identity_group','groups':identity_groups,
+                           'message':'Автоматическая группа содержит несогласованные реквизиты; требуется проверка.'})
         parents={row['id']:row['id'] for row in rows}
         edges=[];applied=[];preferred=[];candidates=original_candidates
     else:
         separate={tuple(sorted(root(uid) for uid in decision['ids'])) for decision in applied if decision['action']=='distinct'}
         candidates=[candidate for candidate in candidates
-                    if root(candidate['ids'][0])!=root(candidate['ids'][1])
-                    and tuple(sorted(root(uid) for uid in candidate['ids'])) not in separate]
+                    if candidate['code']=='identity_conflict' or
+                    (root(candidate['ids'][0])!=root(candidate['ids'][1])
+                     and tuple(sorted(root(uid) for uid in candidate['ids'])) not in separate)]
     groups={}
     for row in rows:
         groups.setdefault(root(row['id']),[]).append(row)
