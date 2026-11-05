@@ -1,0 +1,57 @@
+{
+  "schema_version": "local-loan-schedule-1.0",
+  "currency": "RUB",
+  "issue_date": "2024-01-01",
+  "amount": "1000.00",
+  "term_months": "1",
+  "rate": {
+    "fixed": true,
+    "meaning": "borrower_nominal_annual_percent",
+    "value": "36.5"
+  },
+  "accrual": {
+    "interest_type": "simple",
+    "day_count": "actual_365_fixed",
+    "issue_day": "exclude",
+    "repayment_day": "include"
+  },
+  "repayments": [
+    {
+      "date": "2024-01-11",
+      "amount": "1000.00"
+    }
+  ],
+  "interest_payment_dates": [
+    "2024-01-11"
+  ],
+  "fees": [
+    {
+      "id": "F1",
+      "date": "2024-01-01",
+      "calculation": "percent",
+      "rate_pct": "2",
+      "base": "original_principal"
+    }
+  ],
+  "rounding": {
+    "mode": "half_up",
+    "interest_stage": "payment"
+  },
+  "first_12_months": {
+    "end": "2025-01-01",
+    "include_issue_day": true,
+    "include_end_day": false,
+    "cash_include_issue_day": true,
+    "cash_include_end_day": false
+  },
+  "sources": [
+    {
+      "id": "CONTRACT",
+      "file": "synthetic-contract.md",
+      "locator": "условия графика"
+    }
+  ],
+  "terms_sources": [
+    "CONTRACT"
+  ]
+}
