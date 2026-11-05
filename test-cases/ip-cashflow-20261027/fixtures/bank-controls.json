@@ -1,0 +1,18 @@
+[
+  {
+    "account": "SYNTH-ACCOUNT-A",
+    "opening": "1000.00",
+    "debit": "2424.00",
+    "credit": "2512.00",
+    "closing": "1088.00",
+    "bank_count": 12
+  },
+  {
+    "account": "SYNTH-ACCOUNT-B",
+    "opening": "0.00",
+    "debit": "0.00",
+    "credit": "300.00",
+    "closing": "300.00",
+    "bank_count": 1
+  }
+]

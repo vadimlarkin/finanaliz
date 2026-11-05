@@ -132,7 +132,7 @@ def million(fact):
     scaled = Decimal(str(fact['value']))/Decimal('1000000')
     value = format(scaled, 'f').rstrip('0') if scaled and abs(scaled)<Decimal('0.05') else f'{scaled:,.1f}'
     value = value.replace(',', ' ').replace('.', ',')
-    return value+('*' if fact.get('reconstructed') else '')
+    return value+('*' if fact.get('reconstructed') or fact.get('partial') else '')
 
 
 def period_label(period, year):
@@ -149,8 +149,12 @@ def period_label(period, year):
 
 
 def render(data,destination,font_dir=None):
-    result=analyze(data)
-    result['layout_version']=LAYOUT_VERSION
+    return _render_prepared(data, analyze(data), destination, font_dir)
+
+
+def _render_prepared(data,result,destination,font_dir=None):
+    ip_mode = result.get('report_mode') == 'ip_bank'
+    result['layout_version'] = result.get('layout_version', LAYOUT_VERSION)
     register_fonts(font_dir)
     target=Path(destination);target.parent.mkdir(parents=True,exist_ok=True)
     fd,temporary=tempfile.mkstemp(suffix='.pdf',dir=str(target.parent));os.close(fd)
@@ -158,7 +162,7 @@ def render(data,destination,font_dir=None):
         c=Canvas(temporary,pagesize=(PAPER_W,PAPER_H),invariant=1,pageCompression=1)
         c.setTitle('Финансовый отчёт / '+result['company']['name'])
         c.setAuthor('ВБетон')
-        c.setSubject('Fixed layout '+LAYOUT_VERSION)
+        c.setSubject('Fixed layout '+result['layout_version'])
         rect(c,0,0,PAPER_W,PAPER_H,'#FFFFFF')
         draw_logo(c)
         fictional=bool(result['company'].get('fictional'))
@@ -214,9 +218,12 @@ def render(data,destination,font_dir=None):
         label(c,36,526,'Поступления и погашения',11.5,True)
         period=chart['period']
         caption=(date_label(period['start'])+'–'+date_label(period['end'])+' / млн ₽') if period else 'Период не задан'
+        if ip_mode and period:
+            caption = date_label(period['start'])+'–'+date_label(period['end'])+' / '+str(len(result['bank_scope']['accounts']))+' сч. / млн ₽'
         label(c,36,541,caption,7.8,width=252)
         ready=chart['bank_data_complete'] and all(chart['facts'][k]['value'] is not None for k,_ in CHART_ROWS)
-        values=[chart['facts'][k]['value']/1000000 for k,_ in CHART_ROWS] if ready else []
+        values=([chart['facts'][k]['value']/1000000 for k,_ in CHART_ROWS if chart['facts'][k]['value'] is not None]
+                if ip_mode else [chart['facts'][k]['value']/1000000 for k,_ in CHART_ROWS] if ready else [])
         low=min([0]+values);high=max([0]+values)
         span=high-low or 1
         plot_x,plot_width=124,120
@@ -224,7 +231,7 @@ def render(data,destination,font_dir=None):
         for i,(key,title) in enumerate(CHART_ROWS):
             top=556+18*i
             label(c,44,top+8,title,9)
-            if ready:
+            if ready or (ip_mode and chart['facts'][key]['value'] is not None):
                 value=chart['facts'][key]['value']/1000000
                 rect(c,plot_x,top-1,plot_width,12,PALE)
                 endpoint=plot_x+plot_width*(value-low)/span
@@ -234,10 +241,10 @@ def render(data,destination,font_dir=None):
                     c.line(zero,PAPER_H-top+1,zero,PAPER_H-top-11)
                 label(c,288,top+8,million(chart['facts'][key]),9,True,True,40)
             else:
-                label(c,288,top+8,'Неполные данные' if period and not chart['bank_data_complete'] else 'Нет данных',8,right=True,width=158)
+                label(c,288,top+8,'Неполные данные' if not ip_mode and period and not chart['bank_data_complete'] else 'Нет данных',8,right=True,width=158)
         debt=result['report']['current_debt']
         label(c,310,526,'Кредитная нагрузка**',11.5,True)
-        label(c,310,541,('на '+date_label(debt['as_of']) if debt['as_of'] else 'Дата не задана')+' / основной долг, млн ₽',7.8,width=249)
+        label(c,310,541,debt['caption'] if ip_mode else ('на '+date_label(debt['as_of']) if debt['as_of'] else 'Дата не задана')+' / основной долг, млн ₽',7.8,width=249)
         for i,(key,title) in enumerate([
             ('bank_principal','Банковские'),
             ('unrelated_nonbank_principal','Небанковские, без связанных'),
@@ -266,9 +273,17 @@ def render(data,destination,font_dir=None):
             for x,cell in [(431,row['before']),(550,row['after'])]:
                 label(c,x,top+5,cell['display'],14 if cell['value'] is not None else 8.5,True,True,105)
             rule(c,36,top+24,559)
-        if any(f['reconstructed'] for e in history for f in e['facts'].values()):
+        if ip_mode:
+            n=len(result['bank_scope']['accounts'])
+            word='счету' if n%10==1 and n%100!=11 else 'счетам'
+            scope_note='охват неполный.' if result['bank_scope']['incomplete'] else 'не бухгалтерский баланс.'
+            note='* Банковские данные по '+str(n)+' '+word+'; '+scope_note if n else '* Банковские выписки не представлены.'
+            label(c,36,794,note,7.5,width=523)
+        elif any(f['reconstructed'] for e in history for f in e['facts'].values()):
             label(c,36,794,'* Данные текущего периода восстановлены из ОСВ.',7.5,width=523)
-        label(c,36,806,'** Основной долг на указанную дату, без учёта рассматриваемого нового займа.',7.5,width=523)
+        note=('** Известный основной долг по записям ОКБ на разные даты. Новый заём не включён.'
+              if ip_mode else '** Основной долг на указанную дату, без учёта рассматриваемого нового займа.')
+        label(c,36,806,note,7.5,width=523)
         if fictional:
             label(c,36,819,'Все данные вымышлены. Образец предназначен для проверки состава и читаемости.',7.5,width=523)
         c.showPage();c.save()

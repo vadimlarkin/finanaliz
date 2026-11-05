@@ -1,0 +1,12 @@
+{
+  "layout_version": "ip-investor-one-page-3.2",
+  "schema_version": "ip-investor-3.1",
+  "date": "2026-11-04",
+  "status": "approved_layout_promoted_with_dynamic_loan_term",
+  "files": {
+    "ip-investor-one-page-3.2.pdf": "62d4d3581d668d98d089e08c48a80e3e9f52ad5de37ce7e79daf0f8d311b80c9",
+    "ip-investor-one-page-3.2.png": "e64862f8d129ac03981749d21eef872192c9adf06463fe7644017ec6d47a437c",
+    "ip-investor-one-page-3.2.input.json": "23d996d472368f5eec37d97f9c45ee83d851fe109ff9ac693add339d6803166c",
+    "synthetic-ip-investor-v3.2.md": "47f481ab6dbbdd4c326a57b22b3bd796e7a495281d138ac4b1c420da957f1690"
+  }
+}

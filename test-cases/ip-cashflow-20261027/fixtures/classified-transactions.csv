@@ -1,0 +1,14 @@
+id,source,page,account,date,debit,credit,purpose,category,counterparty_account,pair_id
+SYN-01,fictional-bank-statement,1,SYNTH-ACCOUNT-A,2026-09-02,0,2000,Оплата заказчиком по договору,"поступления по договорам, статус дохода не подтверждён",,
+SYN-02,fictional-bank-statement,1,SYNTH-ACCOUNT-A,2026-09-02,0,500,Предоставление займа,получение кредитов и займов,,
+SYN-03,fictional-bank-statement,1,SYNTH-ACCOUNT-A,2026-09-02,300,0,Перевод между своими счетами,собственный перевод между представленными счетами,SYNTH-ACCOUNT-B,PAIR-SYN-1
+SYN-04,fictional-bank-statement,1,SYNTH-ACCOUNT-B,2026-09-02,0,300,Перевод между своими счетами,собственный перевод между представленными счетами,SYNTH-ACCOUNT-A,PAIR-SYN-1
+SYN-05,fictional-bank-statement,1,SYNTH-ACCOUNT-A,2026-09-02,120,0,Выплата процентов по договору займа,проценты по долгу,,
+SYN-06,fictional-bank-statement,1,SYNTH-ACCOUNT-A,2026-09-02,80,0,Перечисление процентов по договору займа,проценты по долгу,,
+SYN-07,fictional-bank-statement,1,SYNTH-ACCOUNT-A,2026-09-02,9,0,Погашение пеней за просроченные проценты,пени по долгу,,
+SYN-08,fictional-bank-statement,1,SYNTH-ACCOUNT-A,2026-09-02,1000,0,Возврат денежных средств по договору займа с процентами,возвраты займов без подтверждённого разделения,,
+SYN-09,fictional-bank-statement,1,SYNTH-ACCOUNT-A,2026-09-02,15,0,Выплата комиссии по договору займа,комиссии и банковское обслуживание,,
+SYN-10,fictional-bank-statement,1,SYNTH-ACCOUNT-A,2026-09-02,200,0,Погашение основного долга,погашение основного долга,,
+SYN-11,fictional-bank-statement,1,SYNTH-ACCOUNT-A,2026-09-02,700,0,Оплата поставщику материалов,"оплаты контрагентам, экономический вид уточняется",,
+SYN-12,fictional-bank-statement,1,SYNTH-ACCOUNT-A,2026-09-02,0,5,Возврат процентов по кредиту,проценты по долгу,,
+SYN-13,fictional-bank-statement,1,SYNTH-ACCOUNT-A,2026-09-02,0,7,Возврат комиссии за обслуживание,комиссии и банковское обслуживание,,
