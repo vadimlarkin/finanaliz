@@ -18,8 +18,8 @@
 | Тикет | Статус | Зависимости | Следующее действие |
 | --- | --- | --- | --- |
 | 01 | in-progress | нет | назначить Cash countula |
-| 05 | in-review | нет | назначить Pdf houdini |
-| 06 | ready-for-agent | нет | после свободного места |
+| 05 | changes-requested | нет | назначить Pdf houdini |
+| 06 | ready-for-agent | нет | возобновить после исправления 05 |
 | 07 | ready-for-agent | нет | после свободного места |
 | 02 | ready-for-agent | 01 | ожидание |
 | 03 | ready-for-agent | 01 | ожидание |
@@ -33,9 +33,11 @@
 | 01 | Cash countula, `/root/cash_countula`, модель inherited/unknown | местный `/Users/vadimlarkin/Developer/finanaliz-cash-countula`, `controller/01-cashflow` | `e0e6c3a3a473cabf1c178d2dee0966af1e33ce67` | running |
 | 05 | Pdf houdini, `/root/pdf_houdini`, модель inherited/unknown | местный `/Users/vadimlarkin/Developer/finanaliz-pdf-houdini`, `controller/05-pdf-cache` | `e0e6c3a3a473cabf1c178d2dee0966af1e33ce67` | in-review |
 
+Debt detective `/root/debt_detective`, модель inherited/unknown, читает 06 в местном `/Users/vadimlarkin/Developer/finanaliz-debt-detective`, ветка `controller/06-debt-register`, база `608d1d95f5c7655a42143538e2eac1778d3b9ac2`. Остановлен до реализации на чистом дереве, для сохранения лимита двух исполнителей при исправлении 05.
+
 ## Проверки и приёмка
 
-05 представлен коммитом `5e366f7f0a577f2142d3db887bddf690a96331c0`. Независимые ревьюеры Style sherlock `/root/style_sherlock` и Spec inspector `/root/spec_inspector` проверяют standards и spec; контроллер повторяет CLI. 01 продолжает выполняться. До тестов согласованы публичные интерфейсы тикетов: CLI и выходные артефакты. Конкретный выбор каждого исполнителя записывается в docs/controller до первого теста. Тесты расчётов отделены от сценариев поведения агента и осмотра PDF.
+05 возвращён Pdf houdini на исправление P2. Ревью Standards: 0 замечаний. Spec: скан с embedded номером страницы ошибочно получает complete=true, растровый текст потерян. Контроллер повторил 10 CLI-тестов OK и смешанный PDF: cache_hit=true, текст обеих страниц сохранён; русский scan.png визуально сверен. Исходный 05 представлен коммитом `5e366f7f0a577f2142d3db887bddf690a96331c0`. Независимые ревьюеры Style sherlock `/root/style_sherlock` и Spec inspector `/root/spec_inspector` проверяют standards и spec; контроллер повторяет CLI. 01 продолжает выполняться. До тестов согласованы публичные интерфейсы тикетов: CLI и выходные артефакты. Конкретный выбор каждого исполнителя записывается в docs/controller до первого теста. Тесты расчётов отделены от сценариев поведения агента и осмотра PDF.
 
 ## Итоги, блокировки и передача
 
