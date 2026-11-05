@@ -13,14 +13,14 @@
 
 ## Очередь
 
-Принято: 1/8. Ретро после 3 и 6.
+Принято: 2/8. Ретро после 3 и 6.
 
 | Тикет | Статус | Зависимости | Следующее действие |
 | --- | --- | --- | --- |
-| 01 | changes-requested | нет | Cash countula исправляет P2 controls |
+| 01 | completed | нет | принят и интегрирован, 01-acceptance.md |
 | 05 | completed | нет | принят и интегрирован, см. 05-acceptance.md |
 | 06 | in-progress | нет | Debt detective выполняет |
-| 07 | in-progress | нет | безопасно остановлен до кода, возобновить после 01 |
+| 07 | in-progress | нет | Loan ranger продолжает |
 | 02 | ready-for-agent | 01 | ожидание |
 | 03 | ready-for-agent | 01 | ожидание |
 | 04 | ready-for-agent | 01 | ожидание |
@@ -32,16 +32,16 @@
 
 | Тикет | Агент и ID | Worktree, ветка | База и результат | Статус |
 | --- | --- | --- | --- | --- |
-| 01 | Cash countula `/root/cash_countula` | `/Users/vadimlarkin/Developer/finanaliz-cash-countula`, `controller/01-cashflow` | база `e0e6c3a3a473cabf1c178d2dee0966af1e33ce67`, результат `c6c46c7d4d1cd8f33b9b921f4251aa0ddd54ea2a` | in-review, fix `90afd1e7f8e02580d747ee6348726ebce0c34d4f` |
+| 01 | Cash countula `/root/cash_countula` | `/Users/vadimlarkin/Developer/finanaliz-cash-countula`, `controller/01-cashflow` | база `e0e6c3a3a473cabf1c178d2dee0966af1e33ce67`, результат `c6c46c7d4d1cd8f33b9b921f4251aa0ddd54ea2a` | completed, merge `d5b9ccfcc61c73889d513186890a74ab9e176ee7` |
 | 06 | Debt detective `/root/debt_detective` | `/Users/vadimlarkin/Developer/finanaliz-debt-detective`, `controller/06-debt-register` | база `608d1d95f5c7655a42143538e2eac1778d3b9ac2` | running |
-| 07 | Loan ranger `/root/loan_ranger` | `/Users/vadimlarkin/Developer/finanaliz-loan-ranger`, `controller/07-loan-schedule` | база `e9c487d56ebd13d29d08229381bb2adaa3c06333`, дерево чистое | stopped до первого теста/кода, сохранить и возобновить после 01 |
+| 07 | Loan ranger `/root/loan_ranger` | `/Users/vadimlarkin/Developer/finanaliz-loan-ranger`, `controller/07-loan-schedule` | база `e9c487d56ebd13d29d08229381bb2adaa3c06333`, дерево чистое | running, возобновлён после приёмки01 |
 
-01 Spec inspector `/root/spec_inspector` нашёл P2: ошибочные/дублированные controls дают подтверждённые остатки PDF несмотря audit error. Контроллер воспроизвёл duplicate controls. Standards Style sherlock `/root/style_sherlock`: нарушений нет, P3 эвристика дублирования расчёта revenue. 13 исходных CLI тестов OK. Синтетический PDF 3.2 отрендерен и осмотрен, без дефектов. Исправление `90afd1e7f8e02580d747ee6348726ebce0c34d4f` проходит повторные Spec/Standards проверки и CLI контроллера. Автор сообщил 14 целевых тестов OK.
+01 принят, подробности `docs/controller/01-acceptance.md`.
 
 ## Проверки и приёмка
 
-05 принят и интегрирован merge-коммитом `4bc26102ef0fc489fb96d7fa6143912196533eed`, 144 теста OK. Доказательства `docs/controller/05-acceptance.md`. До тестов согласованы публичные интерфейсы тикетов: CLI и выходные артефакты. Конкретный выбор каждого исполнителя записывается в docs/controller до первого теста. Тесты расчётов отделены от сценариев поведения агента и осмотра PDF.
+05 принят и интегрирован merge-коммитом `4bc26102ef0fc489fb96d7fa6143912196533eed`, 144 теста OK. Доказательства `docs/controller/05-acceptance.md`. 01 интегрирован `d5b9ccfcc61c73889d513186890a74ab9e176ee7`, 158 тестов OK, доказательства `docs/controller/01-acceptance.md`. До тестов согласованы публичные интерфейсы тикетов: CLI и выходные артефакты. Конкретный выбор каждого исполнителя записывается в docs/controller до первого теста. Тесты расчётов отделены от сценариев поведения агента и осмотра PDF.
 
 ## Итоги, блокировки и передача
 
-Тикеты скопированы из общей папки без изменения. Неустранимых блокировок нет. Следующее действие: повторная приёмка исправления 01, затем возобновление 07. Новые назначения ожидать до освобождения исполнителя; после третьей приёмки сначала ретро. Происхождение тикетов: `docs/controller/provenance.md`.
+Тикеты скопированы из общей папки без изменения. Неустранимых блокировок нет. Следующее действие: принимать06/07 по готовности. После третьей приёмки остановить новые назначения и провести ретро до выдачи02–04. Уже выполняющуюся работу сохранить. Происхождение тикетов: `docs/controller/provenance.md`.
