@@ -1,0 +1,15 @@
+[
+  {
+    "account": "A",
+    "source": "BANK",
+    "opening": "10.00",
+    "debit": "20.02",
+    "credit": "150.35",
+    "closing": "140.33",
+    "bank_count": 3,
+    "period": {
+      "start": "2026-01-01",
+      "end": "2026-02-28"
+    }
+  }
+]

@@ -1,0 +1,68 @@
+{
+  "schema_version": "local-statement-csv-1.0",
+  "encoding": "utf-8",
+  "delimiter": ";",
+  "date_format": "%d.%m.%Y",
+  "amount_format": {
+    "decimal_separator": ",",
+    "group_separator": " ",
+    "blank_is_zero": true
+  },
+  "direction": {
+    "mode": "separate",
+    "debit_column": "Расход",
+    "credit_column": "Приход"
+  },
+  "columns": {
+    "date": "Дата",
+    "purpose": "Назначение",
+    "currency": "Валюта",
+    "category": "Категория"
+  },
+  "category_map": {
+    "Покупатели": {
+      "category": "revenue",
+      "status": "confirmed"
+    },
+    "Поставщики": {
+      "category": "suppliers",
+      "status": "confirmed"
+    }
+  },
+  "currency": "RUB",
+  "account": {
+    "account": "A",
+    "owner_id": "OWNER"
+  },
+  "period": {
+    "start": "2026-01-01",
+    "end": "2026-02-28"
+  },
+  "coverage": {
+    "complete": true
+  },
+  "source_id": "STATEMENT",
+  "service_rows": [],
+  "control_sources": [
+    {
+      "id": "BANK",
+      "file": "local-statement-csv-bank-control.json",
+      "locator": "Вымышленные независимые итоги"
+    }
+  ],
+  "bank_controls": [
+    {
+      "account": "A",
+      "source": "BANK",
+      "opening": "10.00",
+      "debit": "20.02",
+      "credit": "150.35",
+      "closing": "140.33",
+      "bank_count": 3,
+      "period": {
+        "start": "2026-01-01",
+        "end": "2026-02-28"
+      }
+    }
+  ]
+}
