@@ -38,7 +38,7 @@
 
 01 принят, подробности `docs/controller/01-acceptance.md`.
 
-06 представлен коммитом `c0e08b5c6cf9e8b72b554ca0d2c398af9033e4cd`, дерево автора чистое, 12 целевых/143 исходной регрессии OK. Standards0замечаний. SpecP2: неизвестная база либо treatmentunknown вместе с knownadditional теряет неопределённость вpdf_patch, формаcalculated5.00. Контроллер повторил12testsOK и первую ветку, fixture work/controller-06/controller-unknown-events*.json. Автор исправляет обе ветки отдельнымкоммитом; knownreplace должен сохраниться.
+06 представлен коммитом `c0e08b5c6cf9e8b72b554ca0d2c398af9033e4cd`, дерево автора чистое, 12 целевых/143 исходной регрессии OK. Standards: замечаний нет. Spec P2: неизвестная база либо treatment unknown вместе с known additional теряет неопределённость в pdf_patch, форма calculated 5.00. Контроллер повторил 12 tests OK и первую ветку, fixture work/controller-06/controller-unknown-events*.json. Автор исправляет обе ветки отдельным коммитом; known replace должен сохраниться.
 
 ## Проверки и приёмка
 
