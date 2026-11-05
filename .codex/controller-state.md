@@ -22,7 +22,7 @@
 | 07 | completed | нет | принято и интегрировано |
 | 02 | completed | 01 completed | принято и интегрировано |
 | 03 | completed | 01 completed | принято и интегрировано |
-| 04 | in-review | 01 completed | Spec и Standards приёмка |
+| 04 | changes-requested | 01 completed | Csv picasso исправляет нетекстовую кодировку |
 | 08 | ready-for-agent | 02–07 | ожидать все зависимости |
 
 ## Незавершённая работа
@@ -33,9 +33,9 @@
 | --- | --- | --- | --- | --- |
 
 
-Csv picasso `/root/csv_picasso`, модель inherited/unknown, in-review04 в местном `/Users/vadimlarkin/Developer/finanaliz-csv-picasso`, ветка `controller/04-csv-import`, база `20048cda5492d80ff367dd789a9b06105e73cafb`. Общие calculate/check не меняет, импорт по явным профилям. Назначен после приёмки03.
+Csv picasso `/root/csv_picasso`, модель inherited/unknown, running fix04 в местном `/Users/vadimlarkin/Developer/finanaliz-csv-picasso`, ветка `controller/04-csv-import`, база `20048cda5492d80ff367dd789a9b06105e73cafb`. Общие calculate/check не меняет, импорт по явным профилям. Назначен после приёмки03.
 
-04 представлен коммитом `3239adfe7957565971eb851b758beffd421e9d56`, дерево автора чистое; 13 целевых/214 исходной регрессии автора OK. Контроллер повторяет CLI, Spec inspector и Style sherlock проверяют две оси.
+04 представлен коммитом `3239adfe7957565971eb851b758beffd421e9d56`, дерево автора чистое; 13 целевых/214 исходной регрессии автора OK. Контроллер повторил13 CLI-тестов OK и успешный импорт с настоящим check_cashflow. Standards0. SpecP2: base64_codec проходит lookup, но даёт LookupError/traceback без JSON. Контроллер повторил дефект; автор делает отдельный минимальный fix, исходники и прежний CSV должны сохраняться.
 
 ## Проверки и приёмка
 
