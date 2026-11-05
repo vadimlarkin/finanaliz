@@ -21,7 +21,7 @@
 | 06 | completed | нет | принято и интегрировано |
 | 07 | completed | нет | принято и интегрировано |
 | 02 | in-progress | 01 completed | Double trouble выполняет |
-| 03 | in-review | 01 completed | Spec и Standards приёмка |
+| 03 | changes-requested | 01 completed | Transfer watson исправляет stale контекст |
 | 04 | ready-for-agent | 01 completed | после освобождения места |
 | 08 | ready-for-agent | 02–07 | ожидать все зависимости |
 
@@ -33,9 +33,9 @@
 | --- | --- | --- | --- | --- |
 | 02 | Double trouble `/root/double_trouble` | `/Users/vadimlarkin/Developer/finanaliz-double-trouble`, `controller/02-overlap` | `66e085a4075c04e49baf482024e3437c741b9c95` | running |
 
-Transfer watson `/root/transfer_watson`, модель inherited/unknown, in-review03 в местном `/Users/vadimlarkin/Developer/finanaliz-transfer-watson`, ветка `controller/03-own-transfers`, база `c0049205be1140e34439afa637b639d199b90224`. Может изменять check_cashflow/calculate для подтверждённых переводов с разными датами; Double trouble сохраняет эти поля и общие скрипты не меняет.
+Transfer watson `/root/transfer_watson`, модель inherited/unknown, running fix03 в местном `/Users/vadimlarkin/Developer/finanaliz-transfer-watson`, ветка `controller/03-own-transfers`, база `c0049205be1140e34439afa637b639d199b90224`. Может изменять check_cashflow/calculate для подтверждённых переводов с разными датами; Double trouble сохраняет эти поля и общие скрипты не меняет.
 
-03 представлен коммитом `8d53b125e2699f29d98bc316dfa46ba416a6b784`, дерево автора чистое. Контроллер повторил 12 новых CLI-тестов OK. Standards: замечаний нет. Spec выполняется. Автор сообщил 11 прежних CSV-тестов и 200 общей регрессии OK.
+03 представлен коммитом `8d53b125e2699f29d98bc316dfa46ba416a6b784`, дерево автора чистое. Контроллер повторил 12 новых CLI-тестов OK. Standards: замечаний нет. Spec P2: сохранённая пара обходила удаление объявленного источника evidence и изменение владельцев, сохраняя очищение обеих сторон. Контроллер повторил удаление PROOF. Автор исправляет обе ветки отдельным коммитом; raw данные и исходные обороты должны сохраниться до разрешения. Автор сообщил 11 прежних CSV-тестов и 200 общей регрессии OK.
 
 ## Проверки и приёмка
 
