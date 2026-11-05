@@ -185,3 +185,52 @@ else:
         self.assertEqual(process.returncode, 0, process.stdout)
         self.assertIn('ID', result['pages'][0]['text'])
         self.assertIn('OCR SAMPLE 123.45', result['pages'][0]['text'])
+
+    def image_pdf_with_page_number(self):
+        from PIL import Image, ImageDraw
+        from reportlab.lib.utils import ImageReader
+        image = Image.new('RGB', (1200, 400), 'white')
+        ImageDraw.Draw(image).text((40, 100), 'Invoice 123.45 2026-11-05', fill='black', font_size=45)
+        c = canvas.Canvas(str(self.pdf))
+        c.drawImage(ImageReader(image), 40, 450, width=520, height=173)
+        c.drawString(290, 25, '1')
+        c.showPage()
+        c.save()
+
+    def test_scan_with_embedded_page_number_is_incomplete_without_ocr(self):
+        self.image_pdf_with_page_number()
+        process, result = self.run_cli()
+        self.assertEqual(process.returncode, 2, process.stdout)
+        self.assertFalse(result['complete'])
+        self.assertEqual(result['pages'][0]['method'], 'unavailable')
+        self.assertEqual(result['pages'][0]['embedded_text'].strip(), '1')
+        self.assertEqual(result['review_pages'], [1])
+
+    @unittest.skipUnless(sys.platform == 'darwin', 'Apple Vision requires macOS')
+    def test_vision_reads_scan_beyond_embedded_page_number(self):
+        self.image_pdf_with_page_number()
+        process, result = self.run_cli('--ocr', 'vision', '--language', 'eng')
+        self.assertEqual(process.returncode, 0, process.stdout + process.stderr)
+        page = result['pages'][0]
+        self.assertEqual(page['method'], 'ocr')
+        self.assertEqual(page['ocr_reason'], 'raster_content')
+        self.assertEqual(page['embedded_text'].strip(), '1')
+        self.assertIn('123.45', page['ocr_text'])
+        self.assertIn('2026-11-05', page['ocr_text'])
+        self.assertTrue(page['text'].startswith('1\n[OCR]\n'))
+        self.assertEqual(result['review_pages'], [1])
+
+    def test_embedded_text_with_raster_logo_explains_conservative_ocr_requirement(self):
+        from PIL import Image
+        from reportlab.lib.utils import ImageReader
+        c = canvas.Canvas(str(self.pdf))
+        c.drawString(50, 750, 'Long usable embedded invoice text with amount 678.90 and date 2026-11-05')
+        c.drawImage(ImageReader(Image.new('RGB', (20, 20), 'blue')), 50, 700, width=20, height=20)
+        c.showPage()
+        c.save()
+        process, result = self.run_cli()
+        self.assertEqual(process.returncode, 2)
+        self.assertEqual(result['pages'][0]['raster_images'], 1)
+        self.assertEqual(result['pages'][0]['ocr_reason'], 'raster_content')
+        self.assertIn('678.90', result['pages'][0]['embedded_text'])
+        self.assertEqual(result['review_pages'], [1])

@@ -140,7 +140,15 @@ def extract(source, cache_dir, *, language='rus+eng', ocr='auto', dpi=200, min_t
             errors.append('Ошибка извлечения готового текста: ' + str(exc))
         embedded_text = text
         ocr_text = None
-        usable = sum(c.isalnum() for c in text) >= min_text_chars
+        # Embedded text cannot establish coverage of text inside raster content.
+        # Treat image pages conservatively, including scans with a text page number.
+        try:
+            raster_images = len(page.images)
+        except Exception as exc:
+            raster_images = None
+            errors.append('Не удалось проверить растровое содержимое: ' + str(exc))
+        usable = raster_images == 0 and sum(c.isalnum() for c in text) >= min_text_chars
+        ocr_reason = None if usable else ('raster_content' if raster_images else 'insufficient_embedded_text')
         method = 'embedded' if usable else 'unavailable'
         confidence = None
         if not usable:
@@ -158,7 +166,7 @@ def extract(source, cache_dir, *, language='rus+eng', ocr='auto', dpi=200, min_t
             else:
                 errors.append(tools['ocr']['error'])
         pages.append({'page': number, 'text': text, 'embedded_text': embedded_text, 'ocr_text': ocr_text,
-                      'method': method, 'errors': errors,
+                      'method': method, 'errors': errors, 'raster_images': raster_images, 'ocr_reason': ocr_reason,
                       'review_required': method != 'embedded' or bool(errors), 'minimum_confidence': confidence})
     result = {'schema_version': 1, 'source': {'path': str(source), 'sha256': digest(data)},
               'settings': settings, 'tools': tools, 'cache_key': key, 'cache_hit': False,
