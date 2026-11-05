@@ -1,0 +1,108 @@
+{
+  "cashflow": {
+    "accounts": [
+      {
+        "account": "A",
+        "owner_id": "OWNER"
+      },
+      {
+        "account": "B",
+        "owner_id": "OWNER"
+      }
+    ],
+    "coverage": {
+      "complete": true
+    },
+    "operations": [
+      {
+        "account": "A",
+        "category": "own_out",
+        "category_status": "confirmed",
+        "counterparty_account": "B",
+        "credit": "0",
+        "date": "2026-01-31",
+        "debit": "100.01",
+        "document_number": "D-1",
+        "id": "OUT",
+        "operation_date": "2026-01-31",
+        "page": "OUT",
+        "purpose": "Перевод средств",
+        "source": "S"
+      },
+      {
+        "account": "B",
+        "category": "own_in",
+        "category_status": "confirmed",
+        "counterparty_account": "A",
+        "credit": "100.01",
+        "date": "2026-02-01",
+        "debit": "0",
+        "document_number": "D-1",
+        "id": "IN",
+        "operation_date": "2026-01-31",
+        "page": "IN",
+        "purpose": "Перевод средств",
+        "source": "S"
+      },
+      {
+        "account": "A",
+        "category": "suppliers",
+        "category_status": "confirmed",
+        "credit": "0",
+        "date": "2026-01-31",
+        "debit": "20.02",
+        "id": "SUP",
+        "page": "SUP",
+        "purpose": "Расчёт",
+        "source": "S"
+      },
+      {
+        "account": "B",
+        "category": "revenue",
+        "category_status": "confirmed",
+        "credit": "50.03",
+        "date": "2026-02-03",
+        "debit": "0",
+        "id": "REV",
+        "page": "REV",
+        "purpose": "Расчёт",
+        "source": "S"
+      }
+    ],
+    "period": {
+      "end": "2026-02-28",
+      "start": "2026-01-01"
+    },
+    "schema_version": "local-cashflow-1.0",
+    "sources": [
+      {
+        "file": "synthetic.csv",
+        "id": "S",
+        "locator": "1-4"
+      }
+    ]
+  },
+  "decisions": [
+    {
+      "action": "confirm",
+      "evidence": {
+        "document_number": "D-1",
+        "operation_date": "2026-01-31",
+        "sources": [
+          "S"
+        ]
+      },
+      "fingerprints": {
+        "IN": "81d9bfff2bf02023892517d174d49e5d47fd362106d28bec77a65ac405a3dd45",
+        "OUT": "f4c98bf7d79ff8dd123ce07fd975ad1e5584b68a81eadb4598126e6086996acb"
+      },
+      "operation_ids": [
+        "OUT",
+        "IN"
+      ],
+      "pair_id": "P1",
+      "reason": "Аналитик сверил документ и встречные счета"
+    }
+  ],
+  "schema_version": "local-own-transfers-1.0"
+}

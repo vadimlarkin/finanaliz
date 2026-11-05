@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import hashlib
 import json
 import re
 import sys
@@ -58,6 +59,53 @@ def date_value(value):
 
 def money(value):
     return format(value, '.2f')
+
+
+def operation_fingerprint(row):
+    """Bind a decision to source fields while allowing analyst annotations to change."""
+    original = {k:v for k,v in row.items() if k not in
+                {'category', 'category_status', 'pair_id', 'transfer_confirmation'} and v not in ('', None)}
+    for key in ('date', 'operation_date'):
+        if key in original:
+            original[key] = date_value(original[key]).isoformat()
+    return hashlib.sha256(json.dumps(original, ensure_ascii=False, sort_keys=True,
+                                    separators=(',', ':')).encode()).hexdigest()
+
+
+def transfer_evidence(a, b, pair_id):
+    """Validate the saved analyst confirmation, retaining legacy same-day pairs."""
+    same_day = date_value(a['date']) == date_value(b['date'])
+    raw_a, raw_b = a.get('transfer_confirmation'), b.get('transfer_confirmation')
+    if same_day and not raw_a and not raw_b:
+        return {'pair_id':pair_id, 'operation_ids':sorted([a['id'], b['id']]),
+                'basis':'legacy_same_day', 'dates':[a['date'], b['date']]}
+    if not raw_a or not raw_b:
+        raise ValueError('Для разных дат требуется сохранённое подтверждение обеих сторон')
+    first = json.loads(raw_a) if isinstance(raw_a, str) else raw_a
+    second = json.loads(raw_b) if isinstance(raw_b, str) else raw_b
+    ids = sorted([a['id'], b['id']])
+    if (not isinstance(first, dict) or first != second or first.get('pair_id') != pair_id
+            or first.get('operation_ids') != ids
+            or first.get('accounts') != sorted([a['account'], b['account']])
+            or first.get('fingerprints') != {r['id']:operation_fingerprint(r) for r in (a,b)}):
+        raise ValueError('Подтверждение не соответствует паре или снимкам исходных операций')
+    if any(not isinstance(first.get(k),str) or not first[k].strip() for k in ('owner_id','reason')):
+        raise ValueError('Подтверждение требует владельца и основание аналитика')
+    evidence = first.get('evidence')
+    if (not isinstance(evidence, dict) or not isinstance(evidence.get('sources'),list)
+            or not evidence['sources'] or any(not isinstance(s,str) or not s.strip() for s in evidence['sources'])):
+        raise ValueError('Подтверждение требует источники доказательств')
+    if not same_day:
+        document = evidence.get('document_number')
+        if (not isinstance(document,str) or not document.strip()
+                or a.get('document_number') != document or b.get('document_number') != document
+                or not evidence.get('operation_date')
+                or not a.get('operation_date') or not b.get('operation_date')
+                or any(date_value(r['operation_date']) != date_value(evidence['operation_date']) for r in (a,b))):
+            raise ValueError('Разные даты требуют совпадающие документ и дату операции обеих сторон')
+    return {'pair_id':pair_id, 'operation_ids':ids, 'dates':[a['date'],b['date']],
+            'basis':'same_day_analyst' if same_day else 'document_and_operation_date',
+            'reason':first['reason'], 'evidence':evidence, 'owner_id':first['owner_id']}
 
 
 def audit(rows, controls=None):
@@ -122,6 +170,7 @@ def audit(rows, controls=None):
                 fail('unexpected_pair_category', 'Пара отмечена у операции другой категории', row)
             pair_groups[pair_id].append((row, debit, credit))
     paired_amount, matched_pairs = ZERO, 0
+    evidence_audit = []
     for pair_id, group in pair_groups.items():
         outgoing = [x for x in group if x[1] > ZERO]
         incoming = [x for x in group if x[2] > ZERO]
@@ -132,13 +181,20 @@ def audit(rows, controls=None):
             valid = (debit == credit and a['account'] != b['account']
                      and a['account'] == b.get('counterparty_account')
                      and b['account'] == a.get('counterparty_account')
-                     and date_value(a['date']) == date_value(b['date'])
                      and all(normalized(x[0]['category']) in MATCHED_TRANSFER for x in group))
+        detail = ''
+        if valid:
+            try:
+                evidence = transfer_evidence(a,b,pair_id)
+            except (ValueError,TypeError,KeyError) as exc:
+                valid = False
+                detail = ': '+str(exc)
         if not valid:
-            fail('invalid_transfer_pair', 'Не сходятся стороны собственного перевода: ' + pair_id)
+            fail('invalid_transfer_pair', 'Не сходятся стороны собственного перевода: ' + pair_id + detail)
         else:
             paired_amount += debit
             matched_pairs += 1
+            evidence_audit.append(evidence)
 
     bank_accounts = 0
     if controls is not None:
@@ -185,7 +241,7 @@ def audit(rows, controls=None):
                        'debit': money(sum((v['debit'] for v in accounts.values()), ZERO) - paired_amount),
                        'credit': money(sum((v['credit'] for v in accounts.values()), ZERO) - paired_amount)},
                    'by_category': {k: {f: money(v) for f, v in values.items()} for k, values in sorted(categories.items())}},
-        'issues': issues,
+        'issues': issues, 'transfer_evidence':evidence_audit,
     }
 
 
