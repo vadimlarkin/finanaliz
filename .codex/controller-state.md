@@ -2,7 +2,7 @@
 
 ## Снимок и владелец
 
-Обновлено 05.11.2026, AirM5. Владелец: текущий чат-контроллер; поручение передано из чата `01a1ab96-3932-7a82-a679-fb7e4ecbbaa4`. Предыдущих владельцев этого прогона нет. Каноническая Git-копия: `/Users/vadimlarkin/Developer/finanaliz-report-composition-20261022`, origin `https://github.com/vadimlarkin/finanaliz.git`, ветка main. Исходный HEAD `1d42b5e7daa00dbdb6d2046c91b005c62ae31543`, дерево было чистым. Последняя принятая интеграция `1ba0f75fdf64112f367d97f1e28ae53409ad083c`. Точный коммит снимка определяется Git.
+Обновлено 05.11.2026, AirM5. Владелец: текущий чат-контроллер; поручение передано из чата `01a1ab96-3932-7a82-a679-fb7e4ecbbaa4`. Предыдущих владельцев этого прогона нет. Каноническая Git-копия: `/Users/vadimlarkin/Developer/finanaliz-report-composition-20261022`, origin `https://github.com/vadimlarkin/finanaliz.git`, ветка main. Исходный HEAD `1d42b5e7daa00dbdb6d2046c91b005c62ae31543`, дерево было чистым. Последняя принятая интеграция `d328925666840b43b9a66193a9a1610a8ccfd86e`. Точный коммит снимка определяется Git.
 
 Основной снимок находится здесь. Общий Synology HANDOFF описывает установленную 0.1.0 и не заменяет этот снимок. Происхождение восьми тикетов: `docs/controller/provenance.md`, статусы синхронизируются с общей папкой.
 
@@ -12,7 +12,7 @@
 
 ## Очередь
 
-Принято 6/8. Ретро после шестого завершено и сохранено в `docs/controller/retro-after-06.md`; новые назначения после зависимостей разрешены. Ретро после третьего завершено: `docs/controller/retro-after-03.md`. Обязательные ретро после3 и6 выполнены. Для остатка прогона место исполнителя сохраняется до приёмки его задачи, включая исправления. Общие правила по ретро не менялись.
+Принято 7/8. Ретро после шестого завершено и сохранено в `docs/controller/retro-after-06.md`; новые назначения после зависимостей разрешены. Ретро после третьего завершено: `docs/controller/retro-after-03.md`. Обязательные ретро после3 и6 выполнены. Для остатка прогона место исполнителя сохраняется до приёмки его задачи, включая исправления. Общие правила по ретро не менялись.
 
 | Тикет | Статус | Зависимости | Следующее действие |
 | --- | --- | --- | --- |
@@ -22,7 +22,7 @@
 | 07 | completed | нет | принято и интегрировано |
 | 02 | completed | 01 completed | принято и интегрировано |
 | 03 | completed | 01 completed | принято и интегрировано |
-| 04 | in-review | 01 completed | повторная приёмка fix082c21d |
+| 04 | completed | 01 completed | принято и интегрировано |
 | 08 | ready-for-agent | 02–07 | ожидать все зависимости |
 
 ## Незавершённая работа
@@ -33,9 +33,7 @@
 | --- | --- | --- | --- | --- |
 
 
-Csv picasso `/root/csv_picasso`, модель inherited/unknown, in-review04 в местном `/Users/vadimlarkin/Developer/finanaliz-csv-picasso`, ветка `controller/04-csv-import`, база `20048cda5492d80ff367dd789a9b06105e73cafb`. Общие calculate/check не меняет, импорт по явным профилям. Назначен после приёмки03.
 
-04 представлен коммитом `3239adfe7957565971eb851b758beffd421e9d56`, дерево автора чистое; 13 целевых/214 исходной регрессии автора OK. Контроллер повторил13 CLI-тестов OK и успешный импорт с настоящим check_cashflow. Standards0. SpecP2: base64_codec проходит lookup, но даёт LookupError/traceback без JSON. Контроллер повторил дефект; Fix `082c21d28d7fe2d966817dfb77c0d5a0cb87166f` передан на повторную приёмку. Автор14 целевых/215 исходной регрессии OK, исходники и прежний CSV сохранены. Контроллер повторяет fixture и тесты, обе оси ревью выполняются.
 
 ## Проверки и приёмка
 
@@ -45,6 +43,7 @@ Csv picasso `/root/csv_picasso`, модель inherited/unknown, in-review04 в 
 | 01 | Cash countula `/root/cash_countula` | `90afd1e7f8e02580d747ee6348726ebce0c34d4f` | `d5b9ccfcc61c73889d513186890a74ab9e176ee7` | `docs/controller/01-acceptance.md`, 158 tests OK, PDF3.2 осмотрен |
 | 06 | Debt detective `/root/debt_detective` | `b710ca66eef7bf48415f0bb9a85d7d54ed13cae1` | `1aa40cb1fb83194df6f46f8ae4650748ea78fb6e` | `docs/controller/06-acceptance.md`, 172 tests OK |
 | 02 | Double trouble `/root/double_trouble` | `5f72cccccd6272fcee8b6b5b26b8ddf85031d758` | `1ba0f75fdf64112f367d97f1e28ae53409ad083c` | `docs/controller/02-acceptance.md`, 219 tests OK |
+| 04 | Csv picasso `/root/csv_picasso` | `082c21d28d7fe2d966817dfb77c0d5a0cb87166f` | `d328925666840b43b9a66193a9a1610a8ccfd86e` | `docs/controller/04-acceptance.md`, 233 tests OK |
 | 03 | Transfer watson `/root/transfer_watson` | `3c62d9dd37eeb926bdb251836f2243fe73a3b1f1` | `f25f5f6f0cc501416e1e642a1961f6d91205ed30` | `docs/controller/03-acceptance.md`, 201 tests OK |
 | 07 | Loan ranger `/root/loan_ranger` | `f552d51bee25fd59de6076832849cb7b6c92a3e2` | `35512caba571e56ff2b96e3bafaa34d63d1c7f3f` | `docs/controller/07-acceptance.md`, 188 tests OK |
 
@@ -54,4 +53,4 @@ Csv picasso `/root/csv_picasso`, модель inherited/unknown, in-review04 в 
 
 ## Итоги, блокировки и передача
 
-Неустранимых блокировок нет. Следующее действие: принять04 по готовности, затем назначить08 на общей принятой базе. Ретро6 завершено, уже выполняющаяся04 сохраняется. Release, установка и общие правила не менялись. Незавершённых внешних операций нет; публикация main в origin ещё не выполнялась в этом прогоне.
+Неустранимых блокировок нет. Следующее действие: назначить08 на общей принятой базе02–07. Обе обязательные ретро завершены. Release, установка и общие правила по ретро не менялись. Незавершённых внешних операций нет; публикация main в origin ещё не выполнялась в этом прогоне.
