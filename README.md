@@ -84,6 +84,12 @@ python skills/borrower-financial-analysis/scripts/render_dashboard.py examples/i
 
 Python 3.9+. Фирменные начертания Roboto Flex и векторный логотип ВБетон включены и проверяются по SHA-256. Координаты, размеры, цвета и порядок полей фиксированы в генераторе. Одинаковый вход даёт одинаковые PDF-байты в одной среде. При переполнении рендер выдаёт ошибку, а не обрезает факты и не добавляет вторую страницу.
 
+Один локальный запуск выбранных расчётов и PDF описан в [local-analysis-runner.md](skills/borrower-financial-analysis/references/local-analysis-runner.md):
+
+```bash
+python skills/borrower-financial-analysis/scripts/run_local_analysis.py examples/local-analysis-corporate.json work/local-corporate
+```
+
 Для подготовленных операций ИП:
 
 ```bash

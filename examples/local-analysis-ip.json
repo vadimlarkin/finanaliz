@@ -1,0 +1,24 @@
+{
+  "schema_version": "local-analysis-runner-1.0",
+  "case_id": "SYNTHETIC-IP",
+  "mode": "ip",
+  "borrower": {
+    "name": "ИП Примеров А.А.",
+    "inn": "000000000000"
+  },
+  "assessment_date": "2026-11-04",
+  "scope": "Вымышленный ограниченный банковский разбор ИП без бухгалтерского учёта; срок нового займа неизвестен.",
+  "sources": [],
+  "report_input": "local-analysis-ip-input.json",
+  "render_pdf": true,
+  "steps": {
+    "cashflow": {
+      "imports": [
+        {
+          "path": "local-statement-csv-separate.csv",
+          "profile": "local-analysis-ip-profile.json"
+        }
+      ]
+    }
+  }
+}
