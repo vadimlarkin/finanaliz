@@ -1,0 +1,68 @@
+{
+  "schema_version": "local-analysis-runner-1.0",
+  "case_id": "SYNTHETIC-CORPORATE",
+  "mode": "corporate",
+  "borrower": {
+    "name": "ООО «Пример»",
+    "inn": "0000000000"
+  },
+  "assessment_date": "2026-10-22",
+  "scope": "Вымышленный пример запуска по подготовленным корпоративным фактам после проверки минимума.",
+  "sources": [
+    {
+      "id": "INTAKE",
+      "file": "synthetic-local-intake.md",
+      "locator": "Учебный результат проверки шести пунктов"
+    }
+  ],
+  "intake": {
+    "reviewed_by": "Учебный аналитик",
+    "checks": [
+      {
+        "id": "borrower",
+        "status": "confirmed",
+        "sources": [
+          "INTAKE"
+        ]
+      },
+      {
+        "id": "loan",
+        "status": "confirmed",
+        "sources": [
+          "INTAKE"
+        ]
+      },
+      {
+        "id": "annual_statements",
+        "status": "confirmed",
+        "sources": [
+          "INTAKE"
+        ]
+      },
+      {
+        "id": "trial_balance",
+        "status": "confirmed",
+        "sources": [
+          "INTAKE"
+        ]
+      },
+      {
+        "id": "debt",
+        "status": "confirmed",
+        "sources": [
+          "INTAKE"
+        ]
+      },
+      {
+        "id": "statements",
+        "status": "confirmed",
+        "sources": [
+          "INTAKE"
+        ]
+      }
+    ]
+  },
+  "report_input": "investor.json",
+  "render_pdf": true,
+  "steps": {}
+}
