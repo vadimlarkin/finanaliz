@@ -13,13 +13,13 @@
 
 ## Очередь
 
-Принято: 0/8. Ретро после 3 и 6.
+Принято: 1/8. Ретро после 3 и 6.
 
 | Тикет | Статус | Зависимости | Следующее действие |
 | --- | --- | --- | --- |
 | 01 | in-progress | нет | назначить Cash countula |
-| 05 | changes-requested | нет | назначить Pdf houdini |
-| 06 | ready-for-agent | нет | возобновить после исправления 05 |
+| 05 | completed | нет | принят и интегрирован, см. 05-acceptance.md |
+| 06 | in-progress | нет | Debt detective выполняет |
 | 07 | ready-for-agent | нет | после свободного места |
 | 02 | ready-for-agent | 01 | ожидание |
 | 03 | ready-for-agent | 01 | ожидание |
@@ -33,12 +33,14 @@
 | 01 | Cash countula, `/root/cash_countula`, модель inherited/unknown | местный `/Users/vadimlarkin/Developer/finanaliz-cash-countula`, `controller/01-cashflow` | `e0e6c3a3a473cabf1c178d2dee0966af1e33ce67` | running |
 | 05 | Pdf houdini, `/root/pdf_houdini`, модель inherited/unknown | местный `/Users/vadimlarkin/Developer/finanaliz-pdf-houdini`, `controller/05-pdf-cache` | `e0e6c3a3a473cabf1c178d2dee0966af1e33ce67` | in-review |
 
-Debt detective `/root/debt_detective`, модель inherited/unknown, читает 06 в местном `/Users/vadimlarkin/Developer/finanaliz-debt-detective`, ветка `controller/06-debt-register`, база `608d1d95f5c7655a42143538e2eac1778d3b9ac2`. Остановлен до реализации на чистом дереве, для сохранения лимита двух исполнителей при исправлении 05.
+Debt detective `/root/debt_detective`, модель inherited/unknown, читает 06 в местном `/Users/vadimlarkin/Developer/finanaliz-debt-detective`, ветка `controller/06-debt-register`, база `608d1d95f5c7655a42143538e2eac1778d3b9ac2`. После исправления 05 возобновлён, running.
+
+01 представлен коммитом `c6c46c7d4d1cd8f33b9b921f4251aa0ddd54ea2a`, Spec inspector проверяет требования; Standards нарушений нет, одна неблокирующая эвристика повторения расчёта выручки. Контроллер повторил 13 тестов OK и визуально осмотрел синтетический PDF 3.2 без дефектов.
 
 ## Проверки и приёмка
 
-05 возвращён Pdf houdini на исправление P2. Ревью Standards: 0 замечаний. Spec: скан с embedded номером страницы ошибочно получает complete=true, растровый текст потерян. Контроллер повторил 10 CLI-тестов OK и смешанный PDF: cache_hit=true, текст обеих страниц сохранён; русский scan.png визуально сверен. Исходный 05 представлен коммитом `5e366f7f0a577f2142d3db887bddf690a96331c0`. Независимые ревьюеры Style sherlock `/root/style_sherlock` и Spec inspector `/root/spec_inspector` проверяют standards и spec; контроллер повторяет CLI. 01 продолжает выполняться. До тестов согласованы публичные интерфейсы тикетов: CLI и выходные артефакты. Конкретный выбор каждого исполнителя записывается в docs/controller до первого теста. Тесты расчётов отделены от сценариев поведения агента и осмотра PDF.
+05 принят и интегрирован merge-коммитом `4bc26102ef0fc489fb96d7fa6143912196533eed`, 144 теста OK. Доказательства `docs/controller/05-acceptance.md`. До тестов согласованы публичные интерфейсы тикетов: CLI и выходные артефакты. Конкретный выбор каждого исполнителя записывается в docs/controller до первого теста. Тесты расчётов отделены от сценариев поведения агента и осмотра PDF.
 
 ## Итоги, блокировки и передача
 
-Тикеты скопированы из общей папки без изменения. Неустранимых блокировок нет. Следующее действие: принять каждый готовый результат отдельно. Происхождение тикетов: `docs/controller/provenance.md`.
+Тикеты скопированы из общей папки без изменения. Неустранимых блокировок нет. Следующее действие: принять 01 и назначить независимый 07 второму исполнителю. Происхождение тикетов: `docs/controller/provenance.md`.
