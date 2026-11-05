@@ -272,6 +272,62 @@ class LocalAnalysisRunnerCLI(unittest.TestCase):
                 decision['reason']+='; аналитик повторно сверил изменённый контекст'
                 code,reviewed=self.run_case(root,data);self.assertEqual(code,0,reviewed)
 
+    def test_saved_transfer_confirmation_tracks_selected_evidence_version(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);data=self.transfer_case(root)
+            proof=root/'proof.txt';proof.write_text('Первая сверка D1');data['source_files']=[str(proof)]
+            base=root/'base.json';raw=json.loads(base.read_text())
+            raw['sources']=[{'id':'PROOF','file':str(proof),'locator':'Сверка документа'}];base.write_text(json.dumps(raw))
+            code,pending=self.run_case(root,data);self.assertEqual(code,2,pending)
+            candidate=pending['details']['candidates'][0]
+            decision={'pair_id':'P1','operation_ids':candidate['operation_ids'],'fingerprints':candidate['fingerprints'],
+                      'action':'confirm','reason':'Сверено по D1','evidence':{'sources':['PROOF'],'document_number':'D1','operation_date':'2026-01-31'}}
+            data['steps']['cashflow']['transfers']['decisions']=[decision]
+            code,result=self.run_case(root,data);self.assertEqual(code,0,result)
+            current=root/'run/current';saved=json.loads((current/'stages/transfers.json').read_text())['cashflow_input']
+            base.write_text(json.dumps(saved))
+            data['source_files'] += [str(root/(name+'.csv')) for name in ('A','B')]
+            data['steps']['cashflow']={'input':str(base),'transfers':{'decisions':[],'external_accounts':[]}}
+            code,result=self.run_case(root,data);self.assertEqual(code,0,result)
+            # An unrelated source and its selected bytes do not invalidate the saved pair.
+            other=root/'other.txt';other.write_text('Несвязанный источник');data['source_files'].append(str(other))
+            saved['sources'].append({'id':'OTHER','file':str(other),'locator':'Отдельный документ'});base.write_text(json.dumps(saved))
+            code,result=self.run_case(root,data);self.assertEqual(code,0,result)
+            before={p.relative_to(current).as_posix():p.read_bytes() for p in current.rglob('*') if p.is_file()}
+            proof.write_text('Исправленная сверка D1')
+            code,result=self.run_case(root,data);self.assertEqual(code,2,result);self.assertEqual(result['stage'],'transfers')
+            self.assertIn('контекст',result['message'])
+            self.assertEqual({p.relative_to(current).as_posix():p.read_bytes() for p in current.rglob('*') if p.is_file()},before)
+            # A formatting-only change is still the same stale confirmation.
+            for row in saved['operations']:
+                if row.get('transfer_confirmation'):
+                    confirmation=json.loads(row['transfer_confirmation']);confirmation['reason']='  '+confirmation['reason']+'  '
+                    row['transfer_confirmation']=json.dumps(confirmation,indent=2)
+            base.write_text(json.dumps(saved));code,result=self.run_case(root,data);self.assertEqual(code,2,result)
+            # Explicit analyst review updates both copies of the saved confirmation.
+            for row in saved['operations']:
+                if row.get('transfer_confirmation'):
+                    confirmation=json.loads(row['transfer_confirmation']);confirmation['reason']+='; повторно сверено после исправления основания'
+                    row['transfer_confirmation']=json.dumps(confirmation)
+            base.write_text(json.dumps(saved));code,result=self.run_case(root,data);self.assertEqual(code,0,result)
+            contexts=json.loads((current/'stages/transfers.json').read_text())['runner_decision_contexts']
+            self.assertEqual(len(contexts),1)
+
+    def test_prepared_legacy_same_day_pair_remains_usable(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);data=self.case('ip');data.pop('intake');data.pop('report_input');data['render_pdf']=False
+            flow=json.loads((ROOT/'examples/local-own-transfers.json').read_text())['cashflow']
+            for row in flow['operations'][:2]:
+                row.update(pair_id='LEGACY',category='own_transfer_matched',date='2026-01-31')
+                row.pop('transfer_confirmation',None)
+            base=root/'base.json';base.write_text(json.dumps(flow))
+            data['steps']={'cashflow':{'input':str(base),'transfers':{'decisions':[],'external_accounts':[]}}}
+            for _ in range(2):
+                code,result=self.run_case(root,data);self.assertEqual(code,0,result)
+            matched=json.loads((root/'run/current/stages/transfers.json').read_text())
+            self.assertEqual(matched['confirmed_pairs'][0]['basis'],'legacy_same_day')
+            self.assertEqual(len(matched['runner_decision_contexts']),1)
+
     def test_debt_and_loan_stages_use_existing_modules_and_replace_unknown_report_numbers(self):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp);data=self.case();terms=json.loads((ROOT/'examples/local-loan-schedule.json').read_text())

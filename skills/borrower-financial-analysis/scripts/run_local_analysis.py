@@ -285,7 +285,7 @@ def verify_versions(sources,inputs,loads=()):
 
 
 def decision_contexts(flow,decisions,case,inputs):
-    from check_cashflow import date_value
+    from check_cashflow import date_value, operation_fingerprint
     rows={row['id']:row for row in flow['operations']}
     accounts={account['account']:account for account in flow['accounts']}
     sources={source['id']:source for source in flow['sources']}
@@ -301,7 +301,7 @@ def decision_contexts(flow,decisions,case,inputs):
     for decision in decisions:
         ids=decision.get('operation_ids',[])
         if len(ids)!=2 or any(uid not in rows for uid in ids):continue
-        stable=copy.deepcopy(decision)
+        stable={key:copy.deepcopy(decision[key]) for key in ('pair_id','reason','evidence') if key in decision}
         stable['operation_ids']=sorted(ids)
         stable['reason']=' '.join(str(stable.get('reason','')).split())
         evidence=stable.get('evidence',{})
@@ -312,6 +312,7 @@ def decision_contexts(flow,decisions,case,inputs):
         relevant={rows[uid]['source'] for uid in ids}
         if isinstance(evidence,dict) and isinstance(evidence.get('sources'),list):relevant.update(evidence['sources'])
         context={'borrower_inn':case['borrower']['inn'],
+                 'fingerprints':{uid:operation_fingerprint(rows[uid]) for uid in sorted(ids)},
                  'accounts':[accounts[key] for key in sorted({rows[uid]['account'] for uid in ids})],
                  'sources':[observed_source(sources[key],inputs) for key in sorted(relevant) if key in sources]}
         digest=hashlib.sha256(encode(context).encode()).hexdigest()
@@ -395,9 +396,8 @@ def execute_steps(case,inputs,stage,state,stages,report):
         if 'transfers' in cfg:
             state['stage']='transfers';settings=cfg['transfers']
             if not isinstance(settings,dict) or set(settings)-{'external_accounts','decisions'}:raise ValueError('transfers: нужны external_accounts и decisions')
-            contexts=decision_contexts(flow,settings.get('decisions',[]),case,inputs)
             matched=match({'schema_version':'local-own-transfers-1.0','cashflow':flow,'external_accounts':settings.get('external_accounts',[]),'decisions':settings.get('decisions',[])})
-            matched['runner_decision_contexts']=contexts
+            matched['runner_decision_contexts']=decision_contexts(flow,matched['confirmed_pairs'],case,inputs)
             save_stage(stage,'transfers',matched,stages);flow=matched['cashflow_input'];outputs['transfers']=matched
         state['stage']='cashflow';result=calculate(flow);save_stage(stage,'cashflow',result,stages);outputs['cashflow']=result
         if report is not None and case['mode']=='ip':
