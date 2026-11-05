@@ -17,10 +17,10 @@
 
 | Тикет | Статус | Зависимости | Следующее действие |
 | --- | --- | --- | --- |
-| 01 | in-progress | нет | назначить Cash countula |
+| 01 | in-review | нет | Spec приёмка |
 | 05 | completed | нет | принят и интегрирован, см. 05-acceptance.md |
 | 06 | in-progress | нет | Debt detective выполняет |
-| 07 | ready-for-agent | нет | после свободного места |
+| 07 | in-progress | нет | Loan ranger выполняет |
 | 02 | ready-for-agent | 01 | ожидание |
 | 03 | ready-for-agent | 01 | ожидание |
 | 04 | ready-for-agent | 01 | ожидание |
@@ -36,6 +36,8 @@
 Debt detective `/root/debt_detective`, модель inherited/unknown, читает 06 в местном `/Users/vadimlarkin/Developer/finanaliz-debt-detective`, ветка `controller/06-debt-register`, база `608d1d95f5c7655a42143538e2eac1778d3b9ac2`. После исправления 05 возобновлён, running.
 
 01 представлен коммитом `c6c46c7d4d1cd8f33b9b921f4251aa0ddd54ea2a`, Spec inspector проверяет требования; Standards нарушений нет, одна неблокирующая эвристика повторения расчёта выручки. Контроллер повторил 13 тестов OK и визуально осмотрел синтетический PDF 3.2 без дефектов.
+
+Loan ranger `/root/loan_ranger`, модель inherited/unknown, running07 в местном `/Users/vadimlarkin/Developer/finanaliz-loan-ranger`, ветка `controller/07-loan-schedule`, база `e9c487d56ebd13d29d08229381bb2adaa3c06333`.
 
 ## Проверки и приёмка
 
