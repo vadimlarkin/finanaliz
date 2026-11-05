@@ -19,7 +19,7 @@
 | --- | --- | --- | --- |
 | 01 | completed | нет | принят и интегрирован, 01-acceptance.md |
 | 05 | completed | нет | принят и интегрирован, см. 05-acceptance.md |
-| 06 | in-progress | нет | Debt detective выполняет |
+| 06 | in-review | нет | Spec и Standards приёмка |
 | 07 | in-progress | нет | Loan ranger продолжает |
 | 02 | ready-for-agent | 01 | ожидание |
 | 03 | ready-for-agent | 01 | ожидание |
@@ -33,10 +33,12 @@
 | Тикет | Агент и ID | Worktree, ветка | База и результат | Статус |
 | --- | --- | --- | --- | --- |
 | 01 | Cash countula `/root/cash_countula` | `/Users/vadimlarkin/Developer/finanaliz-cash-countula`, `controller/01-cashflow` | база `e0e6c3a3a473cabf1c178d2dee0966af1e33ce67`, результат `c6c46c7d4d1cd8f33b9b921f4251aa0ddd54ea2a` | completed, merge `d5b9ccfcc61c73889d513186890a74ab9e176ee7` |
-| 06 | Debt detective `/root/debt_detective` | `/Users/vadimlarkin/Developer/finanaliz-debt-detective`, `controller/06-debt-register` | база `608d1d95f5c7655a42143538e2eac1778d3b9ac2` | running |
+| 06 | Debt detective `/root/debt_detective` | `/Users/vadimlarkin/Developer/finanaliz-debt-detective`, `controller/06-debt-register` | база `608d1d95f5c7655a42143538e2eac1778d3b9ac2` | in-review, результат `c0e08b5c6cf9e8b72b554ca0d2c398af9033e4cd` |
 | 07 | Loan ranger `/root/loan_ranger` | `/Users/vadimlarkin/Developer/finanaliz-loan-ranger`, `controller/07-loan-schedule` | база `e9c487d56ebd13d29d08229381bb2adaa3c06333`, дерево чистое | running, возобновлён после приёмки01 |
 
 01 принят, подробности `docs/controller/01-acceptance.md`.
+
+06 представлен коммитом `c0e08b5c6cf9e8b72b554ca0d2c398af9033e4cd`, дерево автора чистое, 12 целевых/143 исходной регрессии OK. Ревьюеры Spec inspector и Style sherlock выполняют две оси, контроллер повторяет CLI.
 
 ## Проверки и приёмка
 
