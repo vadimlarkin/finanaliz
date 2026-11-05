@@ -20,7 +20,7 @@
 | 05 | completed | нет | принято и интегрировано |
 | 06 | completed | нет | принято и интегрировано |
 | 07 | completed | нет | принято и интегрировано |
-| 02 | changes-requested | 01 completed | Double trouble исправляет auto-транзитивность |
+| 02 | in-review | 01 completed | повторная приёмка fix5f72ccc |
 | 03 | completed | 01 completed | принято и интегрировано |
 | 04 | in-progress | 01 completed | Csv picasso выполняет |
 | 08 | ready-for-agent | 02–07 | ожидать все зависимости |
@@ -33,7 +33,7 @@
 | --- | --- | --- | --- | --- |
 | 02 | Double trouble `/root/double_trouble` | `/Users/vadimlarkin/Developer/finanaliz-double-trouble`, `controller/02-overlap` | `66e085a4075c04e49baf482024e3437c741b9c95` | in-review, результат `f6fddc33c2e0a64d498089337aeb898c179f9d55` |
 
-02 представлен коммитом `f6fddc33c2e0a64d498089337aeb898c179f9d55`, дерево автора чистое, 16 целевых/188 исходной регрессии автора OK. Standards0. SpecP2: мост BANK-1 / missing / BANK-2 стирает identity_conflict внутри auto-union, включая повтор localID. Контроллер повторил16 тестов OK и обе дефектные ветки. Автор исправляет отдельным коммитом.
+02 представлен коммитом `f6fddc33c2e0a64d498089337aeb898c179f9d55`, дерево автора чистое, 16 целевых/188 исходной регрессии автора OK. Standards0. SpecP2: мост BANK-1 / missing / BANK-2 стирает identity_conflict внутри auto-union, включая повтор localID. Контроллер повторил16 тестов OK и обе дефектные ветки. Fix `5f72cccccd6272fcee8b6b5b26b8ddf85031d758` передан на повторную приёмку; 18 целевых/190 исходной регрессии автора OK. Контроллер и две независимые оси повторяют проверку.
 
 Csv picasso `/root/csv_picasso`, модель inherited/unknown, running04 в местном `/Users/vadimlarkin/Developer/finanaliz-csv-picasso`, ветка `controller/04-csv-import`, база `20048cda5492d80ff367dd789a9b06105e73cafb`. Общие calculate/check не меняет, импорт по явным профилям. Назначен после приёмки03.
 
