@@ -14,15 +14,15 @@
 
 Принято 7/8. Обязательные ретро после 3 и 6 сохранены: `docs/controller/retro-after-03.md`, `docs/controller/retro-after-06.md`. Для оставшейся очереди слот автора сохраняется до приёмки, включая исправления. Это решение текущего прогона, общие правила не менялись.
 
-Тикеты 01–07 completed, каждый принят и интегрирован. Тикет 08 in-review, зависимости 02–07 completed. Других задач в очереди нет.
+Тикеты 01–07 completed, каждый принят и интегрирован. Тикет 08 changes-requested, зависимости 02–07 completed. Других задач в очереди нет.
 
 ## Незавершённая работа
 
-08 передан на приёмку. Автор Run dmc `/root/run_dmc`, модель inherited/unknown, завершил ход и не редактирует дерево. Местный worktree `/Users/vadimlarkin/Developer/finanaliz-run-dmc`, ветка `controller/08-local-runner`, база `9f7e38e03d14b2d47aaff37a13dcbc8a86e91505`, результат и текущий HEAD `dda98b264ad13a7844d31372da21b4ad91d86862`, дерево чистое. Изменено 10 файлов, общие расчётные модули и генераторы сохранены.
+08 передан на приёмку. Автор Run dmc `/root/run_dmc`, модель inherited/unknown, возобновлён для минимального исправления P2. Местный worktree `/Users/vadimlarkin/Developer/finanaliz-run-dmc`, ветка `controller/08-local-runner`, база `9f7e38e03d14b2d47aaff37a13dcbc8a86e91505`, результат и текущий HEAD `dda98b264ad13a7844d31372da21b4ad91d86862`, кандидат был чистым; текущее исправление ещё не закоммичено. Изменено 10 файлов, общие расчётные модули и генераторы сохранены.
 
 Автор сообщил 17 целевых/250 общих тестов OK. Контроллер повторил 17 CLI-тестов OK. Оба постоянных PDF извлечены локально, отрендерены и осмотрены: по 1 странице, читаемые поля/диаграммы/сноски без наложений и обрезки. Все artifact/snapshot/tool hashes проверены по точному target. Receipt в местном `work/controller-08-qa/` канонической Git-копии. PDF SHA256: corporate `5cb4596dc8d3b8a0d8ba6f23f7fe1692c136ccc659e48aad76e513f8248fbc19`, ip `c020c7aee31bc210de0250d0598e9fd3f50ac3aa9678afcc02ad9c4cb038a92e`. Автоматический manifest сохраняет pending/required визуального осмотра, отдельная приёмка фиксирует сделанный человеком осмотр.
 
-Standards Style sherlock `/root/style_sherlock`: только неблокирующий P3, в отчёте `steps` ошибочно назван optional, runtime/reference требуют явный steps. Spec inspector `/root/spec_inspector` продолжает проверку, предварительно найден P2: decision_contexts учитывает новые decisions, но сохранённый transfer_confirmation в готовом cashflow не связывается с версией выбранного proof file. Изменение proof bytes при decisions=[] сохраняет исключение пары. Автору исправление ещё не выдано до полного Spec отчёта. Безопасное следующее действие: дождаться полного ревью, передать автору минимальный fix P2 и исправление описания steps, затем повторно принять.
+Standards Style sherlock `/root/style_sherlock`: только неблокирующий P3, в отчёте `steps` ошибочно назван optional, runtime/reference требуют явный steps. Spec inspector `/root/spec_inspector` завершил проверку, найден один P2: decision_contexts учитывает новые decisions, но сохранённый transfer_confirmation в готовом cashflow не связывается с версией выбранного proof file. Изменение proof bytes при decisions=[] сохраняет исключение пары. Автору выдан минимальный fix P2 и исправление описания steps отдельным коммитом поверх dda98b2. Постоянный reproducer Spec: местный work/controller-08/spec-saved-confirmation-744zn53v в дереве автора. Безопасное следующее действие: дождаться fix-коммита, повторить оба направления ревью и saved-confirmation сценарий, затем интегрировать. Других замечаний Spec нет.
 
 ## Проверки и приёмка
 
