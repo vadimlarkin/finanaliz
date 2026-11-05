@@ -18,7 +18,7 @@
 | Тикет | Статус | Зависимости | Следующее действие |
 | --- | --- | --- | --- |
 | 01 | in-progress | нет | назначить Cash countula |
-| 05 | in-progress | нет | назначить Pdf houdini |
+| 05 | in-review | нет | назначить Pdf houdini |
 | 06 | ready-for-agent | нет | после свободного места |
 | 07 | ready-for-agent | нет | после свободного места |
 | 02 | ready-for-agent | 01 | ожидание |
@@ -31,11 +31,11 @@
 | Тикет | Имя и ID | Worktree и ветка | База | Статус |
 | --- | --- | --- | --- | --- |
 | 01 | Cash countula, `/root/cash_countula`, модель inherited/unknown | местный `/Users/vadimlarkin/Developer/finanaliz-cash-countula`, `controller/01-cashflow` | `e0e6c3a3a473cabf1c178d2dee0966af1e33ce67` | running |
-| 05 | Pdf houdini, `/root/pdf_houdini`, модель inherited/unknown | местный `/Users/vadimlarkin/Developer/finanaliz-pdf-houdini`, `controller/05-pdf-cache` | `e0e6c3a3a473cabf1c178d2dee0966af1e33ce67` | running |
+| 05 | Pdf houdini, `/root/pdf_houdini`, модель inherited/unknown | местный `/Users/vadimlarkin/Developer/finanaliz-pdf-houdini`, `controller/05-pdf-cache` | `e0e6c3a3a473cabf1c178d2dee0966af1e33ce67` | in-review |
 
 ## Проверки и приёмка
 
-Результатов ещё нет. До тестов согласованы публичные интерфейсы тикетов: CLI и выходные артефакты. Конкретный выбор каждого исполнителя записывается в docs/controller до первого теста. Тесты расчётов отделены от сценариев поведения агента и осмотра PDF.
+05 представлен коммитом `5e366f7f0a577f2142d3db887bddf690a96331c0`. Независимые ревьюеры Style sherlock `/root/style_sherlock` и Spec inspector `/root/spec_inspector` проверяют standards и spec; контроллер повторяет CLI. 01 продолжает выполняться. До тестов согласованы публичные интерфейсы тикетов: CLI и выходные артефакты. Конкретный выбор каждого исполнителя записывается в docs/controller до первого теста. Тесты расчётов отделены от сценариев поведения агента и осмотра PDF.
 
 ## Итоги, блокировки и передача
 
