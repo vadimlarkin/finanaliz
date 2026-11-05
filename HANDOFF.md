@@ -1,4 +1,14 @@
-# Финанализ: отчёт 2.2 и LTM
+# Локальные расчёты: восемь задач приняты
+
+05.11.2026 завершены все восемь тикетов `.scratch/local-financial-calculations/issues/`, изменения интегрированы в местную main, кодовая интеграция `16668acf2f4c44863030fbe0f875105ed5246b0e`. Итоговая регрессия 252 tests OK, оба вымышленных PDF осмотрены. Публикация main завершается по [снимку контроллера](.codex/controller-state.md).
+
+Основной текущий источник состояния: [.codex/controller-state.md](.codex/controller-state.md). Протоколы, коммиты и команды: [docs/controller/README.md](docs/controller/README.md). Обе обязательные ретро сохранены. Реальные документы не включались в Git.
+
+Каноническая Git-копия AirM5 находится вне Synology в `/Users/vadimlarkin/Developer/finanaliz-report-composition-20261022`. Общая папка сохраняет локальные тикеты и точку входа. Установленный finanaliz остаётся 0.1.0; выпуск и установка новых изменений не выполнялись. Остальные ранее отложенные задачи этим прогоном не реализовывались. Новая работа требует нового поручения.
+
+## Предыдущая передача, история
+
+### Финанализ: отчёт 2.2 и LTM
 
 Источник проекта: [vadimlarkin/finanaliz](https://github.com/vadimlarkin/finanaliz), основная ветка `main`. Согласованная доработка одностраничного отчёта и LTM перенесена из местного снимка в ветку от GitHub main для приёмки через PR. Сетевая история сохранена. Результаты: [приёмка](docs/report-finalization-20261023.md), [проверки](docs/validation.md), [образец](skills/borrower-financial-analysis/assets/report/investor-one-page-2.2.pdf).
 
