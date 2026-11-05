@@ -210,3 +210,30 @@ class OwnTransfersCLI(unittest.TestCase):
         self.assertEqual(code,2)
         self.assertEqual(r['confirmed_pairs'],[])
         self.assertIn('duplicate_operation_decision',{x['code'] for x in r['issues']})
+
+    def test_saved_pair_rechecks_sources_and_owner_context_before_exclusion(self):
+        d=self.case(cross_date=True)
+        d['cashflow']['sources'].append({'id':'PROOF','file':'proof.pdf','locator':'1'})
+        decision=self.decision(d);decision['evidence']['sources']=['PROOF'];d['decisions']=[decision]
+        code,first,_=self.run_cli(d)
+        self.assertEqual(code,0)
+        saved={'schema_version':'local-own-transfers-1.0','cashflow':first['cashflow_input'],'decisions':[]}
+        code,valid,_=self.run_cli(saved)
+        self.assertEqual(code,0,valid)
+        for defect in ('missing-proof-source','changed-owner'):
+            with self.subTest(defect=defect):
+                changed=copy.deepcopy(saved)
+                if defect=='missing-proof-source':
+                    changed['cashflow']['sources']=[s for s in changed['cashflow']['sources'] if s['id']!='PROOF']
+                else:
+                    for account in changed['cashflow']['accounts']:account['owner_id']='OTHER'
+                code,r,_=self.run_cli(changed)
+                self.assertEqual(code,2)
+                self.assertEqual(r['confirmed_pairs'],[])
+                self.assertIn('stale_saved_confirmation',{x['code'] for x in r['issues']})
+                self.assertEqual(r['calculation']['audit']['checks']['matched_pairs'],0)
+                self.assertEqual(r['calculation']['after_matched_transfers']['debit']['value'],'120.03')
+                self.assertEqual(r['calculation']['after_matched_transfers']['credit']['value'],'150.04')
+                self.assertEqual(r['original_cashflow'],changed['cashflow'])
+                self.assertTrue(all(not row.get('pair_id') and not row.get('transfer_confirmation')
+                                    for row in r['cashflow_input']['operations'][:2]))

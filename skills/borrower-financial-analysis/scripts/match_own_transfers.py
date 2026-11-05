@@ -25,6 +25,17 @@ def pair_matches(a, b, owners):
                  or (amount(a['credit']) > 0 and amount(a['credit']) == amount(b['debit']))))
 
 
+def checked_transfer_evidence(a, b, pair_id, owners, source_ids):
+    """Recheck saved evidence against the current account and source context."""
+    confirmation = transfer_evidence(a,b,pair_id)
+    if confirmation['basis'] != 'legacy_same_day':
+        if confirmation['owner_id'] != owners[a['account']]:
+            raise ValueError('Владелец сохранённого подтверждения отличается от текущего реестра счетов')
+        if any(source not in source_ids for source in confirmation['evidence']['sources']):
+            raise ValueError('Источник подтверждения отсутствует в текущем реестре')
+    return confirmation
+
+
 def match(data):
     if not isinstance(data,dict) or data.get('schema_version') != VERSION:
         raise ValueError('Нужна схема '+VERSION)
@@ -33,6 +44,7 @@ def match(data):
     rows = cashflow['operations']
     by_id = {r['id']:r for r in rows}
     owners = {a['account']:a['owner_id'] for a in cashflow['accounts']}
+    source_ids = {s['id'] for s in cashflow['sources']}
     external = data.get('external_accounts', [])
     if not isinstance(external,list):
         raise ValueError('external_accounts должен быть массивом подтверждённых счетов')
@@ -68,13 +80,23 @@ def match(data):
         if row.get('pair_id'):
             saved_groups[row['pair_id']].append(row)
     for pair_id, group in sorted(saved_groups.items()):
-        if (len(group) == 2 and pair_matches(*group,owners)
-                and all(row.get('category_status') == 'confirmed' for row in group)
-                and audit(group)['ok']):
-            confirmation = transfer_evidence(*group,pair_id)
-            confirmed.append(confirmation)
-            used.update(row['id'] for row in group)
-            resolved.add(tuple(sorted(row['id'] for row in group)))
+        try:
+            if (len(group) != 2 or not pair_matches(*group,owners)
+                    or not all(row.get('category_status') == 'confirmed' for row in group)
+                    or not audit(group)['ok']):
+                raise ValueError('Сохранённая пара не соответствует текущим сторонам и проверке')
+            confirmation = checked_transfer_evidence(*group,pair_id,owners,source_ids)
+        except (ValueError,TypeError,KeyError) as exc:
+            issues.append({'code':'stale_saved_confirmation','pair_id':pair_id,
+                           'operation_ids':sorted(row['id'] for row in group),'message':str(exc)})
+            for row in group:
+                row.pop('pair_id',None)
+                row.pop('transfer_confirmation',None)
+                row.update(category='unresolved_transfer',category_status='unresolved')
+            continue
+        confirmed.append(confirmation)
+        used.update(row['id'] for row in group)
+        resolved.add(tuple(sorted(row['id'] for row in group)))
     decisions = data.get('decisions', [])
     if not isinstance(decisions,list) or any(not isinstance(d,dict) for d in decisions):
         raise ValueError('decisions должен быть массивом решений')
@@ -120,9 +142,7 @@ def match(data):
         encoded = json.dumps(confirmation,ensure_ascii=False,sort_keys=True,separators=(',',':'))
         temporary_pair = [dict(row, transfer_confirmation=encoded) for row in (a,b)]
         try:
-            transfer_evidence(*temporary_pair,decision['pair_id'])
-            if any(source not in {s['id'] for s in cashflow['sources']} for source in decision['evidence']['sources']):
-                raise ValueError('Неизвестный источник подтверждения')
+            checked_transfer_evidence(*temporary_pair,decision['pair_id'],owners,source_ids)
         except (ValueError,TypeError,KeyError) as exc:
             issues.append({'code':'invalid_transfer_confirmation','operation_ids':ids,'message':str(exc)})
             continue
@@ -147,6 +167,7 @@ def match(data):
             'outside_transfers':outside,
             'candidates':candidates,'confirmed_pairs':confirmed,'unresolved':unresolved,
             'issues':issues,'decisions':copy.deepcopy(data.get('decisions',[])),
+            'original_cashflow':copy.deepcopy(data['cashflow']),
             'cashflow_input':cashflow,'calculation':calculation,
             'limits':['Пары подтверждает аналитик по оригиналам; совпадение суммы не доказывает связь.']}
 
