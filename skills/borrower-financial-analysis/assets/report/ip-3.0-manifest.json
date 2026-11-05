@@ -1,0 +1,12 @@
+{
+  "layout_version": "ip-investor-one-page-3.0",
+  "schema_version": "ip-investor-3.0",
+  "date": "2026-11-03",
+  "status": "composition and definitions approved by user; final implementation rendered and visually checked",
+  "files": {
+    "ip-investor-one-page-3.0.pdf": "14a7b627e945d1ce3eb20da39d231c36a591ec780b4fef86455c54e040a2fdbe",
+    "ip-investor-one-page-3.0.png": "8a9f42c56ee277d096ac36ac22b5b099c6bd329fecd6da37f7e0a478a1feb85c",
+    "ip-investor-one-page-3.0.input.json": "5ecabe501c6908aed8572dbc046d1d105a3fde37aa2032c484a36d0aa6019c5f",
+    "synthetic-ip-investor-v3.md": "b6e26bad48f55caca809feee5b6d89f9648315116de4b78975ef92571a9ecefa"
+  }
+}

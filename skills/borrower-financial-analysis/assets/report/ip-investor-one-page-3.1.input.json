@@ -1,0 +1,503 @@
+{
+  "schema_version": "ip-investor-3.0",
+  "borrower_name": "ИП Примеров А.А.",
+  "inn": "000000000000",
+  "fictional": true,
+  "assessment_date": "2026-10-27",
+  "sources": [
+    {
+      "id": "B",
+      "file": "synthetic-ip-investor-v3.md",
+      "locator": "Банковские итоги и месяцы"
+    },
+    {
+      "id": "C",
+      "file": "synthetic-ip-investor-v3.md",
+      "locator": "Прямые обязательства ОКБ"
+    },
+    {
+      "id": "L",
+      "file": "synthetic-ip-investor-v3.md",
+      "locator": "Новый заём"
+    }
+  ],
+  "period": {
+    "start": "2026-01-01",
+    "end": "2026-10-27"
+  },
+  "bank_scope": {
+    "accounts": [
+      "SYN-A",
+      "SYN-B"
+    ],
+    "incomplete": true,
+    "operations_count": 100
+  },
+  "bank": {
+    "opening": {
+      "value": 500000,
+      "status": "confirmed",
+      "sources": [
+        "B"
+      ],
+      "as_of": "2026-01-01"
+    },
+    "closing": {
+      "value": 800000,
+      "status": "confirmed",
+      "sources": [
+        "B"
+      ],
+      "as_of": "2026-10-27"
+    },
+    "credits": {
+      "value": 20000000,
+      "status": "confirmed",
+      "sources": [
+        "B"
+      ],
+      "period_start": "2026-01-01",
+      "period_end": "2026-10-27"
+    },
+    "debits": {
+      "value": 19700000,
+      "status": "confirmed",
+      "sources": [
+        "B"
+      ],
+      "period_start": "2026-01-01",
+      "period_end": "2026-10-27"
+    },
+    "internal_transfers": {
+      "value": 5000000,
+      "status": "confirmed",
+      "sources": [
+        "B"
+      ],
+      "period_start": "2026-01-01",
+      "period_end": "2026-10-27"
+    },
+    "transfer_pairs": 3
+  },
+  "flows": {
+    "revenue": {
+      "value": 12000000,
+      "status": "confirmed",
+      "sources": [
+        "B"
+      ],
+      "period_start": "2026-01-01",
+      "period_end": "2026-10-27"
+    },
+    "received_loans": {
+      "value": 3000000,
+      "status": "confirmed",
+      "sources": [
+        "B"
+      ],
+      "period_start": "2026-01-01",
+      "period_end": "2026-10-27"
+    },
+    "own_in": {
+      "value": 0,
+      "status": "confirmed",
+      "sources": [
+        "B"
+      ],
+      "period_start": "2026-01-01",
+      "period_end": "2026-10-27"
+    },
+    "other_in": {
+      "value": 0,
+      "status": "confirmed",
+      "sources": [
+        "B"
+      ],
+      "period_start": "2026-01-01",
+      "period_end": "2026-10-27"
+    },
+    "debt_payments": {
+      "value": 5800000,
+      "status": "confirmed",
+      "sources": [
+        "B"
+      ],
+      "period_start": "2026-01-01",
+      "period_end": "2026-10-27"
+    },
+    "payroll": {
+      "value": 1000000,
+      "status": "confirmed",
+      "sources": [
+        "B"
+      ],
+      "period_start": "2026-01-01",
+      "period_end": "2026-10-27"
+    },
+    "suppliers": {
+      "value": 5000000,
+      "status": "confirmed",
+      "sources": [
+        "B"
+      ],
+      "period_start": "2026-01-01",
+      "period_end": "2026-10-27"
+    },
+    "taxes": {
+      "value": 1500000,
+      "status": "confirmed",
+      "sources": [
+        "B"
+      ],
+      "period_start": "2026-01-01",
+      "period_end": "2026-10-27"
+    },
+    "own_out": {
+      "value": 0,
+      "status": "confirmed",
+      "sources": [
+        "B"
+      ],
+      "period_start": "2026-01-01",
+      "period_end": "2026-10-27"
+    },
+    "other_out": {
+      "value": 1400000,
+      "status": "confirmed",
+      "sources": [
+        "B"
+      ],
+      "period_start": "2026-01-01",
+      "period_end": "2026-10-27"
+    }
+  },
+  "misc_breakdown": {
+    "fees_services": {
+      "value": 1000000,
+      "status": "confirmed",
+      "sources": [
+        "B"
+      ],
+      "period_start": "2026-01-01",
+      "period_end": "2026-10-27"
+    },
+    "card": {
+      "value": 300000,
+      "status": "confirmed",
+      "sources": [
+        "B"
+      ],
+      "period_start": "2026-01-01",
+      "period_end": "2026-10-27"
+    },
+    "penalties": {
+      "value": 100000,
+      "status": "confirmed",
+      "sources": [
+        "B"
+      ],
+      "period_start": "2026-01-01",
+      "period_end": "2026-10-27"
+    }
+  },
+  "monthly_revenue": [
+    {
+      "month": "2026-01",
+      "fact": {
+        "value": 0,
+        "status": "confirmed",
+        "sources": [
+          "B"
+        ],
+        "period_start": "2026-01-01",
+        "period_end": "2026-01-31"
+      }
+    },
+    {
+      "month": "2026-02",
+      "fact": {
+        "value": 200000,
+        "status": "confirmed",
+        "sources": [
+          "B"
+        ],
+        "period_start": "2026-02-01",
+        "period_end": "2026-02-28"
+      }
+    },
+    {
+      "month": "2026-03",
+      "fact": {
+        "value": 1800000,
+        "status": "confirmed",
+        "sources": [
+          "B"
+        ],
+        "period_start": "2026-03-01",
+        "period_end": "2026-03-31"
+      }
+    },
+    {
+      "month": "2026-04",
+      "fact": {
+        "value": 0,
+        "status": "confirmed",
+        "sources": [
+          "B"
+        ],
+        "period_start": "2026-04-01",
+        "period_end": "2026-04-30"
+      }
+    },
+    {
+      "month": "2026-05",
+      "fact": {
+        "value": 0,
+        "status": "confirmed",
+        "sources": [
+          "B"
+        ],
+        "period_start": "2026-05-01",
+        "period_end": "2026-05-31"
+      }
+    },
+    {
+      "month": "2026-06",
+      "fact": {
+        "value": 3000000,
+        "status": "confirmed",
+        "sources": [
+          "B"
+        ],
+        "period_start": "2026-06-01",
+        "period_end": "2026-06-30"
+      }
+    },
+    {
+      "month": "2026-07",
+      "fact": {
+        "value": 0,
+        "status": "confirmed",
+        "sources": [
+          "B"
+        ],
+        "period_start": "2026-07-01",
+        "period_end": "2026-07-31"
+      }
+    },
+    {
+      "month": "2026-08",
+      "fact": {
+        "value": 2000000,
+        "status": "confirmed",
+        "sources": [
+          "B"
+        ],
+        "period_start": "2026-08-01",
+        "period_end": "2026-08-31"
+      }
+    },
+    {
+      "month": "2026-09",
+      "fact": {
+        "value": 0,
+        "status": "confirmed",
+        "sources": [
+          "B"
+        ],
+        "period_start": "2026-09-01",
+        "period_end": "2026-09-30"
+      }
+    },
+    {
+      "month": "2026-10",
+      "fact": {
+        "value": 5000000,
+        "status": "confirmed",
+        "sources": [
+          "B"
+        ],
+        "period_start": "2026-10-01",
+        "period_end": "2026-10-27"
+      }
+    }
+  ],
+  "bki": {
+    "report_date": "2026-10-27",
+    "record_period": {
+      "start": "2026-09-30",
+      "end": "2026-10-27"
+    },
+    "principal": {
+      "value": 6000000,
+      "status": "confirmed",
+      "sources": [
+        "C"
+      ],
+      "period_start": "2026-09-30",
+      "period_end": "2026-10-27"
+    },
+    "interest": {
+      "value": 100000,
+      "status": "confirmed",
+      "sources": [
+        "C"
+      ],
+      "period_start": "2026-09-30",
+      "period_end": "2026-10-27"
+    },
+    "total": {
+      "value": 6100000,
+      "status": "confirmed",
+      "sources": [
+        "C"
+      ],
+      "period_start": "2026-09-30",
+      "period_end": "2026-10-27"
+    },
+    "overdue": {
+      "value": 0,
+      "status": "confirmed",
+      "sources": [
+        "C"
+      ],
+      "period_start": "2026-09-30",
+      "period_end": "2026-10-27"
+    },
+    "active_contracts": {
+      "value": 4,
+      "status": "confirmed",
+      "sources": [
+        "C"
+      ],
+      "period_start": "2026-09-30",
+      "period_end": "2026-10-27"
+    }
+  },
+  "debt_payments": {
+    "bank": {
+      "value": 4800000,
+      "status": "confirmed",
+      "sources": [
+        "B"
+      ],
+      "period_start": "2026-01-01",
+      "period_end": "2026-10-27"
+    },
+    "nonbank": {
+      "value": 1000000,
+      "status": "confirmed",
+      "sources": [
+        "B"
+      ],
+      "period_start": "2026-01-01",
+      "period_end": "2026-10-27"
+    },
+    "own_platform": {
+      "value": 400000,
+      "status": "confirmed",
+      "sources": [
+        "B"
+      ],
+      "period_start": "2026-01-01",
+      "period_end": "2026-10-27"
+    },
+    "platform_contracts": {
+      "value": 2,
+      "status": "confirmed",
+      "sources": [
+        "B"
+      ],
+      "period_start": "2026-01-01",
+      "period_end": "2026-10-27"
+    },
+    "platform_name": "ВБетон"
+  },
+  "loan": {
+    "principal": {
+      "value": 3180000,
+      "status": "confirmed",
+      "sources": [
+        "L"
+      ]
+    },
+    "net_proceeds": {
+      "value": 3000000,
+      "status": "confirmed",
+      "sources": [
+        "L"
+      ]
+    },
+    "commission": {
+      "value": 180000,
+      "status": "confirmed",
+      "sources": [
+        "L"
+      ]
+    },
+    "investor_rate_pct": {
+      "value": 28,
+      "status": "confirmed",
+      "sources": [
+        "L"
+      ]
+    },
+    "effective_investor_rate_pct": {
+      "value": 29.46,
+      "status": "confirmed",
+      "sources": [
+        "L"
+      ]
+    },
+    "term_months": {
+      "value": 8,
+      "status": "confirmed",
+      "sources": [
+        "L"
+      ]
+    },
+    "repayment": "end"
+  },
+  "project": {
+    "description": {
+      "text": "Строительные работы по ДСП от 28.05.2026, Калининградская область. Один транш",
+      "sources": [
+        "L"
+      ]
+    },
+    "escrow": {
+      "value": 4750650,
+      "status": "confirmed",
+      "sources": [
+        "L"
+      ]
+    },
+    "escrow_bank": "Сбербанк",
+    "security": {
+      "text": "Планируемый залог: участок 600 м² с недостроенным жилым домом",
+      "sources": [
+        "L"
+      ]
+    }
+  },
+  "conclusions": [
+    {
+      "text": "Подтверждена деятельность с денежной выручкой и выплатами персоналу.",
+      "sources": [
+        "B"
+      ]
+    },
+    {
+      "text": "Есть история выплат ВБетон; небанковские займы участвуют в кредитном обороте.",
+      "sources": [
+        "B"
+      ]
+    },
+    {
+      "text": "Для оценки совокупного долга требуется подтверждение небанковских остатков.",
+      "sources": [
+        "C"
+      ]
+    }
+  ]
+}

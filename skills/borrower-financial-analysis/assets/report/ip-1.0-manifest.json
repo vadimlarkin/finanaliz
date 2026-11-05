@@ -1,0 +1,11 @@
+{
+  "layout_version": "investor-one-page-ip-1.0",
+  "date": "2026-10-27",
+  "status": "implemented following user PDF requirement; example not separately accepted",
+  "files": {
+    "investor-one-page-ip-1.0.pdf": "f16d61667370fedaf7748934e8c152ffdd556a5be8df78672ad97f06794edd71",
+    "investor-one-page-ip-1.0.png": "62cf6ad0837efa9e2076af30abc4510f428a80deb659e76a8a759c26bfc01d1f",
+    "investor-one-page-ip-1.0.input.json": "c39b5bb1fea3a2fee7969e47da6513bfcb4be07c8b331d15d75084cb1d9d9dd5",
+    "synthetic-ip-pdf.md": "9514ec664fe194a8a76a97282268a86c8b7c79f8ab77f52a381e9ee12fb8f961"
+  }
+}

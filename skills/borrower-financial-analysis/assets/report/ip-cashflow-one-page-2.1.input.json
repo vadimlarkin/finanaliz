@@ -1,0 +1,467 @@
+{
+  "schema_version": "ip-pdf-2.1",
+  "borrower_name": "ИП Примеров А.А.",
+  "fictional": true,
+  "assessment_date": "2026-10-27",
+  "sources": [
+    {
+      "id": "B",
+      "file": "synthetic-ip-cashflow-v21.md",
+      "locator": "Банковские итоги и месяцы"
+    },
+    {
+      "id": "C",
+      "file": "synthetic-ip-cashflow-v21.md",
+      "locator": "Прямые обязательства ОКБ"
+    },
+    {
+      "id": "L",
+      "file": "synthetic-ip-cashflow-v21.md",
+      "locator": "Новый заём"
+    }
+  ],
+  "bank_scope": {
+    "accounts": [
+      "SYN-A",
+      "SYN-B"
+    ],
+    "incomplete": true,
+    "operations_count": 100
+  },
+  "period": {
+    "start": "2026-01-01",
+    "end": "2026-10-27"
+  },
+  "bank": {
+    "opening": {
+      "value": 500000,
+      "status": "confirmed",
+      "sources": [
+        "B"
+      ],
+      "as_of": "2026-01-01"
+    },
+    "closing": {
+      "value": 800000,
+      "status": "confirmed",
+      "sources": [
+        "B"
+      ],
+      "as_of": "2026-10-27"
+    },
+    "credits": {
+      "value": 20000000,
+      "status": "confirmed",
+      "sources": [
+        "B"
+      ],
+      "period_start": "2026-01-01",
+      "period_end": "2026-10-27"
+    },
+    "debits": {
+      "value": 19700000,
+      "status": "confirmed",
+      "sources": [
+        "B"
+      ],
+      "period_start": "2026-01-01",
+      "period_end": "2026-10-27"
+    },
+    "internal_transfers": {
+      "value": 5000000,
+      "status": "confirmed",
+      "sources": [
+        "B"
+      ],
+      "period_start": "2026-01-01",
+      "period_end": "2026-10-27"
+    },
+    "transfer_pairs": 3
+  },
+  "inflows": [
+    {
+      "id": "customer",
+      "label": "Поступления клиентов",
+      "fact": {
+        "value": 12000000,
+        "status": "confirmed",
+        "sources": [
+          "B"
+        ],
+        "period_start": "2026-01-01",
+        "period_end": "2026-10-27"
+      }
+    },
+    {
+      "id": "loans",
+      "label": "Полученные займы",
+      "fact": {
+        "value": 3000000,
+        "status": "confirmed",
+        "sources": [
+          "B"
+        ],
+        "period_start": "2026-01-01",
+        "period_end": "2026-10-27"
+      }
+    }
+  ],
+  "outflows": [
+    {
+      "id": "principal",
+      "label": "Основной долг",
+      "fact": {
+        "value": 5000000,
+        "status": "confirmed",
+        "sources": [
+          "B"
+        ],
+        "period_start": "2026-01-01",
+        "period_end": "2026-10-27"
+      }
+    },
+    {
+      "id": "interest",
+      "label": "Проценты",
+      "fact": {
+        "value": 800000,
+        "status": "confirmed",
+        "sources": [
+          "B"
+        ],
+        "period_start": "2026-01-01",
+        "period_end": "2026-10-27"
+      }
+    },
+    {
+      "id": "other",
+      "label": "Прочие списания",
+      "fact": {
+        "value": 8900000,
+        "status": "confirmed",
+        "sources": [
+          "B"
+        ],
+        "period_start": "2026-01-01",
+        "period_end": "2026-10-27"
+      }
+    }
+  ],
+  "flow_notes": [
+    {
+      "text": "Исключены 3 пары встречных переводов, 5,0 млн ₽ в каждой стороне.",
+      "sources": [
+        "B"
+      ]
+    }
+  ],
+  "monthly_client_receipts": [
+    {
+      "month": "2026-01",
+      "fact": {
+        "value": 0,
+        "status": "confirmed",
+        "sources": [
+          "B"
+        ],
+        "period_start": "2026-01-01",
+        "period_end": "2026-01-31"
+      }
+    },
+    {
+      "month": "2026-02",
+      "fact": {
+        "value": 200000,
+        "status": "confirmed",
+        "sources": [
+          "B"
+        ],
+        "period_start": "2026-02-01",
+        "period_end": "2026-02-28"
+      }
+    },
+    {
+      "month": "2026-03",
+      "fact": {
+        "value": 1800000,
+        "status": "confirmed",
+        "sources": [
+          "B"
+        ],
+        "period_start": "2026-03-01",
+        "period_end": "2026-03-31"
+      }
+    },
+    {
+      "month": "2026-04",
+      "fact": {
+        "value": 0,
+        "status": "confirmed",
+        "sources": [
+          "B"
+        ],
+        "period_start": "2026-04-01",
+        "period_end": "2026-04-30"
+      }
+    },
+    {
+      "month": "2026-05",
+      "fact": {
+        "value": 0,
+        "status": "confirmed",
+        "sources": [
+          "B"
+        ],
+        "period_start": "2026-05-01",
+        "period_end": "2026-05-31"
+      }
+    },
+    {
+      "month": "2026-06",
+      "fact": {
+        "value": 3000000,
+        "status": "confirmed",
+        "sources": [
+          "B"
+        ],
+        "period_start": "2026-06-01",
+        "period_end": "2026-06-30"
+      }
+    },
+    {
+      "month": "2026-07",
+      "fact": {
+        "value": 0,
+        "status": "confirmed",
+        "sources": [
+          "B"
+        ],
+        "period_start": "2026-07-01",
+        "period_end": "2026-07-31"
+      }
+    },
+    {
+      "month": "2026-08",
+      "fact": {
+        "value": 2000000,
+        "status": "confirmed",
+        "sources": [
+          "B"
+        ],
+        "period_start": "2026-08-01",
+        "period_end": "2026-08-31"
+      }
+    },
+    {
+      "month": "2026-09",
+      "fact": {
+        "value": 0,
+        "status": "confirmed",
+        "sources": [
+          "B"
+        ],
+        "period_start": "2026-09-01",
+        "period_end": "2026-09-30"
+      }
+    },
+    {
+      "month": "2026-10",
+      "fact": {
+        "value": 5000000,
+        "status": "confirmed",
+        "sources": [
+          "B"
+        ],
+        "period_start": "2026-10-01",
+        "period_end": "2026-10-27"
+      }
+    }
+  ],
+  "debt": {
+    "period": {
+      "start": "2026-09-30",
+      "end": "2026-10-27"
+    },
+    "active_contracts": {
+      "value": 4,
+      "status": "confirmed",
+      "sources": [
+        "C"
+      ],
+      "period_start": "2026-09-30",
+      "period_end": "2026-10-27"
+    },
+    "principal": {
+      "value": 6000000,
+      "status": "confirmed",
+      "sources": [
+        "C"
+      ],
+      "period_start": "2026-09-30",
+      "period_end": "2026-10-27"
+    },
+    "total": {
+      "value": 6100000,
+      "status": "confirmed",
+      "sources": [
+        "C"
+      ],
+      "period_start": "2026-09-30",
+      "period_end": "2026-10-27"
+    },
+    "overdue": {
+      "value": 0,
+      "status": "confirmed",
+      "sources": [
+        "C"
+      ],
+      "period_start": "2026-09-30",
+      "period_end": "2026-10-27"
+    },
+    "payment_indicator": {
+      "value": 40000,
+      "status": "confirmed",
+      "sources": [
+        "C"
+      ],
+      "period_start": "2026-09-30",
+      "period_end": "2026-10-27"
+    },
+    "large_payment": {
+      "date": "2026-11-19",
+      "total": {
+        "value": 1010000,
+        "status": "confirmed",
+        "sources": [
+          "C"
+        ],
+        "as_of": "2026-11-19"
+      },
+      "principal": {
+        "value": 1000000,
+        "status": "confirmed",
+        "sources": [
+          "C"
+        ],
+        "as_of": "2026-11-19"
+      },
+      "interest": {
+        "value": 10000,
+        "status": "confirmed",
+        "sources": [
+          "C"
+        ],
+        "as_of": "2026-11-19"
+      }
+    },
+    "notes": [
+      {
+        "text": "Остатки займов вне ОКБ не установлены. Платёжный ориентир не является точным графиком.",
+        "sources": [
+          "C"
+        ]
+      }
+    ],
+    "payment_scope": {
+      "contracts": 4,
+      "frequency": "monthly",
+      "large_payment_included": false,
+      "sources": [
+        "C"
+      ]
+    }
+  },
+  "loan": {
+    "amount": {
+      "value": 3000000,
+      "status": "confirmed",
+      "sources": [
+        "L"
+      ]
+    }
+  },
+  "banner": "Поступления нерегулярны; охват счетов и займов неполный.",
+  "findings": [
+    {
+      "text": "За период подтверждены клиентские поступления и фактическое обслуживание долга.",
+      "sources": [
+        "B"
+      ]
+    }
+  ],
+  "limitations": [
+    {
+      "text": "Свободный поток и возврат нового займа не установлены при неполном охвате счетов и обязательств.",
+      "sources": [
+        "B",
+        "C"
+      ]
+    }
+  ],
+  "business": {
+    "text": "Подрядное строительство ИЖС",
+    "sources": [
+      "B"
+    ]
+  },
+  "purpose": {
+    "text": "Пополнение оборотных средств",
+    "sources": [
+      "L"
+    ]
+  },
+  "expense_breakdown": [
+    {
+      "id": "contractors",
+      "label": "Контрагенты",
+      "fact": {
+        "value": 5000000,
+        "status": "confirmed",
+        "sources": [
+          "B"
+        ],
+        "period_start": "2026-01-01",
+        "period_end": "2026-10-27"
+      }
+    },
+    {
+      "id": "payroll",
+      "label": "Зарплата",
+      "fact": {
+        "value": 1000000,
+        "status": "confirmed",
+        "sources": [
+          "B"
+        ],
+        "period_start": "2026-01-01",
+        "period_end": "2026-10-27"
+      }
+    },
+    {
+      "id": "taxes",
+      "label": "Налоги",
+      "fact": {
+        "value": 1500000,
+        "status": "confirmed",
+        "sources": [
+          "B"
+        ],
+        "period_start": "2026-01-01",
+        "period_end": "2026-10-27"
+      }
+    },
+    {
+      "id": "bank",
+      "label": "Банк",
+      "fact": {
+        "value": 1400000,
+        "status": "confirmed",
+        "sources": [
+          "B"
+        ],
+        "period_start": "2026-01-01",
+        "period_end": "2026-10-27"
+      }
+    }
+  ]
+}

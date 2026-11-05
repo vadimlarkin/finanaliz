@@ -1,0 +1,120 @@
+{
+  "schema_version": "ip-pdf-1.0",
+  "borrower_name": "ИП Примеров А.А.",
+  "fictional": true,
+  "assessment_date": "2026-10-27",
+  "sources": [
+    {
+      "id": "B",
+      "file": "synthetic-ip-pdf.md",
+      "locator": "Банковские данные"
+    },
+    {
+      "id": "C",
+      "file": "synthetic-ip-pdf.md",
+      "locator": "ОКБ"
+    },
+    {
+      "id": "L",
+      "file": "synthetic-ip-pdf.md",
+      "locator": "Новый заём"
+    }
+  ],
+  "bank_scope": {
+    "accounts": [
+      "SYN-A",
+      "SYN-B"
+    ],
+    "incomplete": true
+  },
+  "cash_history": [
+    {
+      "as_of": "2025-12-31",
+      "fact": {
+        "value": 500000,
+        "status": "calculated",
+        "sources": [
+          "B"
+        ],
+        "derivation": "Вымышленный контрольный пример, расчёт в synthetic-ip-pdf.md.",
+        "as_of": "2025-12-31"
+      }
+    },
+    {
+      "as_of": "2026-10-27",
+      "fact": {
+        "value": 800000,
+        "status": "calculated",
+        "sources": [
+          "B"
+        ],
+        "derivation": "Вымышленный контрольный пример, расчёт в synthetic-ip-pdf.md.",
+        "as_of": "2026-10-27"
+      }
+    }
+  ],
+  "chart": {
+    "period": {
+      "start": "2026-01-01",
+      "end": "2026-10-27"
+    },
+    "facts": {
+      "net_credit_turnover": {
+        "value": 12000000,
+        "status": "calculated",
+        "sources": [
+          "B"
+        ],
+        "derivation": "Вымышленный контрольный пример, расчёт в synthetic-ip-pdf.md.",
+        "period_start": "2026-01-01",
+        "period_end": "2026-10-27"
+      },
+      "principal_paid": {
+        "value": 5000000,
+        "status": "calculated",
+        "sources": [
+          "B"
+        ],
+        "derivation": "Вымышленный контрольный пример, расчёт в synthetic-ip-pdf.md.",
+        "period_start": "2026-01-01",
+        "period_end": "2026-10-27"
+      },
+      "cash_interest_paid": {
+        "value": 800000,
+        "status": "calculated",
+        "sources": [
+          "B"
+        ],
+        "derivation": "Вымышленный контрольный пример, расчёт в synthetic-ip-pdf.md.",
+        "period_start": "2026-01-01",
+        "period_end": "2026-10-27"
+      }
+    }
+  },
+  "bank_debt": {
+    "period": {
+      "start": "2026-09-30",
+      "end": "2026-10-27"
+    },
+    "principal": {
+      "value": 6000000,
+      "status": "calculated",
+      "sources": [
+        "C"
+      ],
+      "derivation": "Вымышленный контрольный пример, расчёт в synthetic-ip-pdf.md.",
+      "period_start": "2026-09-30",
+      "period_end": "2026-10-27"
+    }
+  },
+  "loan": {
+    "amount": {
+      "value": 3000000,
+      "status": "confirmed",
+      "sources": [
+        "L"
+      ]
+    }
+  },
+  "conclusion": "Поток нерегулярен; охват счетов неполный. Прибыль и капитал не установлены."
+}

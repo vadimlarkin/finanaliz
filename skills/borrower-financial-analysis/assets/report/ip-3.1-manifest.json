@@ -1,0 +1,12 @@
+{
+  "layout_version": "ip-investor-one-page-3.1",
+  "schema_version": "ip-investor-3.0",
+  "date": "2026-11-03",
+  "status": "Units alongside amounts in same font and size; rendered and visually checked",
+  "files": {
+    "ip-investor-one-page-3.1.pdf": "6394101f573cdb0638571dd07bf156249f484ee47d077c377a3a2b4926accf06",
+    "ip-investor-one-page-3.1.png": "064de7c2bff3249baa3247165e173579a1b300c10932ec098aafd30117869052",
+    "ip-investor-one-page-3.1.input.json": "5ecabe501c6908aed8572dbc046d1d105a3fde37aa2032c484a36d0aa6019c5f",
+    "synthetic-ip-investor-v3.md": "b6e26bad48f55caca809feee5b6d89f9648315116de4b78975ef92571a9ecefa"
+  }
+}

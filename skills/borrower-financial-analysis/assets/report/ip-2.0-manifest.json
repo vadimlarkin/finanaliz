@@ -1,0 +1,12 @@
+{
+  "layout_version": "ip-cashflow-one-page-2.0",
+  "schema_version": "ip-pdf-2.0",
+  "date": "2026-10-27",
+  "status": "implemented following user instruction; visual acceptance pending",
+  "files": {
+    "ip-cashflow-one-page-2.0.pdf": "4b8ec856f5269e94ee4267c0cc9d3e64708930cb0cd7247f28a63a362e0e1a42",
+    "ip-cashflow-one-page-2.0.png": "b42a2024caa6276df2e6ed5effa987b799bc68129160275f13f7acb51a454854",
+    "ip-cashflow-one-page-2.0.input.json": "8d80e5c73273c8adf112548ff4fe37ec0a2093e6dedc18beba46d1752a1c4fd8",
+    "synthetic-ip-cashflow-v2.md": "6c1dfaa9a4caf001dcb187bb9eb12058e1062062d958b316d2900468d4750638"
+  }
+}
