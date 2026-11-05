@@ -13,13 +13,13 @@
 
 ## Очередь
 
-Принято: 2/8. Ретро после 3 и 6.
+Принято: 3/8. Стоп новых назначений: ретро после третьего тикета выполняется. Следующее ретро после 6.
 
 | Тикет | Статус | Зависимости | Следующее действие |
 | --- | --- | --- | --- |
 | 01 | completed | нет | принят и интегрирован, 01-acceptance.md |
 | 05 | completed | нет | принят и интегрирован, см. 05-acceptance.md |
-| 06 | in-review | нет | повторная приёмка fix b710ca6 |
+| 06 | completed | нет | принят и интегрирован, 06-acceptance.md |
 | 07 | in-progress | нет | Loan ranger продолжает |
 | 02 | ready-for-agent | 01 | ожидание |
 | 03 | ready-for-agent | 01 | ожидание |
@@ -33,17 +33,19 @@
 | Тикет | Агент и ID | Worktree, ветка | База и результат | Статус |
 | --- | --- | --- | --- | --- |
 | 01 | Cash countula `/root/cash_countula` | `/Users/vadimlarkin/Developer/finanaliz-cash-countula`, `controller/01-cashflow` | база `e0e6c3a3a473cabf1c178d2dee0966af1e33ce67`, результат `c6c46c7d4d1cd8f33b9b921f4251aa0ddd54ea2a` | completed, merge `d5b9ccfcc61c73889d513186890a74ab9e176ee7` |
-| 06 | Debt detective `/root/debt_detective` | `/Users/vadimlarkin/Developer/finanaliz-debt-detective`, `controller/06-debt-register` | база `608d1d95f5c7655a42143538e2eac1778d3b9ac2` | in-review, fix `b710ca66eef7bf48415f0bb9a85d7d54ed13cae1` |
+| 06 | Debt detective `/root/debt_detective` | `/Users/vadimlarkin/Developer/finanaliz-debt-detective`, `controller/06-debt-register` | база `608d1d95f5c7655a42143538e2eac1778d3b9ac2` | completed, merge `1aa40cb1fb83194df6f46f8ae4650748ea78fb6e` |
 | 07 | Loan ranger `/root/loan_ranger` | `/Users/vadimlarkin/Developer/finanaliz-loan-ranger`, `controller/07-loan-schedule` | база `e9c487d56ebd13d29d08229381bb2adaa3c06333`, дерево чистое | running, возобновлён после приёмки01 |
 
 01 принят, подробности `docs/controller/01-acceptance.md`.
 
-06 представлен коммитом `c0e08b5c6cf9e8b72b554ca0d2c398af9033e4cd`, дерево автора чистое, 12 целевых/143 исходной регрессии OK. Standards: замечаний нет. Spec P2: неизвестная база либо treatment unknown вместе с known additional теряет неопределённость в pdf_patch, форма calculated 5.00. Контроллер повторил 12 tests OK и первую ветку, fixture work/controller-06/controller-unknown-events*.json. Автор исправил обе ветки и недатированную/немесячную базу отдельным fix `b710ca66eef7bf48415f0bb9a85d7d54ed13cae1`. 14 целевых тестов автора OK. Повторная независимая приёмка и CLI контроллера выполняются; known replace сохранён.
+06 принят после fix, доказательства `docs/controller/06-acceptance.md`.
 
 ## Проверки и приёмка
 
 05 принят и интегрирован merge-коммитом `4bc26102ef0fc489fb96d7fa6143912196533eed`, 144 теста OK. Доказательства `docs/controller/05-acceptance.md`. 01 интегрирован `d5b9ccfcc61c73889d513186890a74ab9e176ee7`, 158 тестов OK, доказательства `docs/controller/01-acceptance.md`. До тестов согласованы публичные интерфейсы тикетов: CLI и выходные артефакты. Конкретный выбор каждого исполнителя записывается в docs/controller до первого теста. Тесты расчётов отделены от сценариев поведения агента и осмотра PDF.
 
+06 интегрирован `1aa40cb1fb83194df6f46f8ae4650748ea78fb6e`; 172 теста OK.
+
 ## Итоги, блокировки и передача
 
-Тикеты скопированы из общей папки без изменения. Неустранимых блокировок нет. Следующее действие: принимать06/07 по готовности. После третьей приёмки остановить новые назначения и провести ретро до выдачи02–04. Уже выполняющуюся работу сохранить. Происхождение тикетов: `docs/controller/provenance.md`.
+Тикеты скопированы из общей папки без изменения. Неустранимых блокировок нет. Следующее действие: завершить ретро 3, сохранить выводы, только затем назначить02. Уже выполняющаяся07 сохраняется. Происхождение тикетов: `docs/controller/provenance.md`.
