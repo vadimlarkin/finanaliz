@@ -55,3 +55,14 @@ python skills/borrower-financial-analysis/scripts/calculate_cashflow.py work/con
 Сценарии подходящего запроса, неподдерживаемого формата, неполных и противоречивых данных описаны и проверены чтением в references/local-statement-csv.md. Это не проведённые модельные прогоны. Подробные вымышленные примеры находятся в examples/local-statement-csv-*, постоянные результаты приёмки в work/controller-04. Реальные документы не использовались.
 
 Указатель для контроллера в SKILL.md: перед импортом CSV-выписки читать references/local-statement-csv.md и запускать scripts/import_statement_csv.py с явным профилем; затем проверять существующие аудит и расчёт. Установка и выпуск вне поручения.
+
+
+## Исправление P2 после независимой приёмки
+
+На коммите `3239adfe7957565971eb851b758beffd421e9d56` Spec inspector и контроллер воспроизвели зарегистрированный нетекстовый codec base64_codec: codecs.lookup принимал имя, а raw.decode бросал не обработанный LookupError. CLI возвращал код 1 с traceback и не создавал JSON.
+
+Новый CLI-тест до исправления воспроизвёл точный симптом. Проверка регистрации codec недостаточна: теперь validate_profile выполняет bytes.decode на непустой пробе и отвергает нетекстовую кодировку как invalid_profile с кодом 2. Непустая проба нужна потому, что Python может вернуть пустую строку для пустых байтов без проверки типа codec. UnicodeError самой пробы для многобайтного текстового формата не объявляется ошибкой профиля; пригодность настоящих исходных байтов проверяет обычное декодирование CSV. Набор поддержанных форматов не расширялся.
+
+Повтор команды `import_statement_csv.py work/controller-04/local-statement-csv-separate.csv work/controller-04/controller-binary-codec-profile.json work/controller-04/controller-binary-codec-result.json --csv-output work/controller-04/controller-binary-codec-prepared.csv` дал ожидаемые код 2 и invalid_profile без traceback. В регрессионном тесте байты CSV/профиля и прежний prepared CSV сохранились. После исправления целевые 14 CLI-тестов прошли. Контроль терминологии исправляющего набора и JSON диагностики выполнен. Отладочных вставок в исходниках нет, макеты и общие скрипты не менялись.
+
+Полная регрессия после fix: 215 тестов, 17.024 секунды, OK.

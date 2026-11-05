@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import argparse
 import copy
-import codecs
 import csv
 from datetime import datetime
 from decimal import Decimal, InvalidOperation
@@ -36,7 +35,13 @@ def validate_profile(profile):
         if profile['schema_version']!=VERSION:
             raise ValueError('Неподдерживаемая schema_version профиля')
         if not isinstance(profile['encoding'],str):raise ValueError('encoding требует имя кодировки')
-        codecs.lookup(profile['encoding'])
+        try:
+            b'x'.decode(profile['encoding'])
+        except UnicodeError:
+            # A multibyte text encoding can reject the probe but decode its real source.
+            pass
+        except LookupError as exc:
+            raise ValueError('encoding требует текстовую кодировку: '+profile['encoding']) from exc
         if not isinstance(profile['delimiter'],str) or len(profile['delimiter'])!=1 or profile['delimiter'] in '\r\n\x00"':
             raise ValueError('delimiter требует один допустимый символ')
         if profile['date_format'] not in {'%Y-%m-%d','%d.%m.%Y'}:

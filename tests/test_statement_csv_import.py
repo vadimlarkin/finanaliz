@@ -311,3 +311,11 @@ class StatementCSVImport(unittest.TestCase):
             self.assertNotEqual(before['source']['sha256'],after['source']['sha256'])
             self.assertEqual(after['summary']['totals']['credit']['value'],'160.35')
             self.assertEqual(after['summary']['months'][1]['totals']['credit']['value'],'60.25')
+
+    def test_registered_binary_codec_is_a_profile_diagnostic_and_preserves_previous_files(self):
+        profile=self.profile();profile['encoding']='base64_codec'
+        code,result,prepared=self.run_cli(self.csv_text().encode('utf-8'),profile,before=b'previous prepared csv')
+        self.assertEqual(code,2,result.get('issues'))
+        self.assertEqual(result['issues'][0]['code'],'invalid_profile')
+        self.assertIn('кодиров',result['issues'][0]['message'])
+        self.assertEqual(prepared,b'previous prepared csv')
