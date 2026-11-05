@@ -225,3 +225,20 @@ class CalculateCashflowCLI(unittest.TestCase):
         data=case();data['bank_controls'][0]['period']={'start':'2026-01-01','end':'2026-02-28'}
         code,result,_=self.run_case(data)
         self.assertEqual(code,2)
+
+    def test_conflicting_bank_controls_never_publish_confirmed_aggregate_balances(self):
+        for mutation,expected_issue in [('duplicate','invalid_controls'),('closing','bank_balance_mismatch')]:
+            with self.subTest(mutation=mutation):
+                data=case()
+                if mutation=='duplicate':data['bank_controls'].append(copy.deepcopy(data['bank_controls'][0]))
+                else:data['bank_controls'][0]['closing']='999.99'
+                original_controls=copy.deepcopy(data['bank_controls'])
+                code,result,_=self.run_case(data)
+                self.assertEqual(code,2)
+                self.assertIn(expected_issue,[i['code'] for i in result['audit']['issues']])
+                self.assertEqual(result['bank_controls'],original_controls)
+                for key in ('opening','closing'):
+                    self.assertIsNone(result['balances'][key]['value'])
+                    self.assertIsNone(result['pdf_patch']['bank'][key]['value'])
+                    self.assertEqual(result['pdf_patch']['bank'][key]['status'],'missing')
+                    self.assertEqual(result['pdf_patch']['bank'][key]['sources'],['C'])

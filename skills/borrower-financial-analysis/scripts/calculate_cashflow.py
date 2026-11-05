@@ -189,12 +189,17 @@ def calculate(data):
             raw['value'] = None
         pdf_months.append({'month':month['month'],'fact':pdf_fact(raw,month['period'])})
     balance_sources = sorted({c.get('source') for c in controls or [] if c.get('source')})
+    bank_issue_codes = sorted({issue['code'] for issue in audit_result['issues']
+                               if issue['code'].startswith('bank_') or
+                               issue['code'] in {'invalid_controls','missing_bank_control'}})
     balances = {}
     for key in ('opening','closing'):
-        known = controls is not None and {c['account'] for c in controls} == set(accounts)
+        known = (controls is not None and not bank_issue_codes
+                 and {c['account'] for c in controls} == set(accounts))
         balances[key] = {'value':money(sum((amount(c[key]) for c in controls),ZERO)) if known else None,
                          'operation_ids':[], 'control_accounts':accounts if known else [],
-                         'sources':balance_sources,'period':copy.deepcopy(period),'accounts':accounts}
+                         'sources':balance_sources,'period':copy.deepcopy(period),'accounts':accounts,
+                         'issue_codes':bank_issue_codes}
     transfer_rows = [r for r in verified if r['category']=='own_transfer_matched']
     transfer_valid = not any('transfer' in i['code'] or 'pair' in i['code'] for i in audit_result['issues'])
     def after_transfers(selected, window=period):
