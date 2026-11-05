@@ -8,11 +8,11 @@ Style sherlock `/root/style_sherlock` проверил первоначальн�
 
 ## Spec
 
-Spec inspector `/root/spec_inspector` выявил P2: сохранённое подтверждение обходило проверку текущих источников доказательства и владельцев. После удаления PROOF либо изменения обоих owner_id старая пара всё ещё исключалась. Исправлено общим контекстным контролем и снятием разрешающих аннотаций у stale пары. Raw сохранён в original_cashflow. Повторные fresh CLI дали code2, stale_saved_confirmation, matched_pairs0 и исходные обороты 120.03 / 150.04. Неизменённые сохранённые и legacy same-day пары продолжают исключаться ровно раз. По совокупному diff открытых замечаний нет.
+Spec inspector `/root/spec_inspector` выявил P2: сохранённое подтверждение обходило проверку текущих источников доказательства и владельцев. После удаления PROOF либо изменения обоих owner_id старая пара всё ещё исключалась. Исправлено общим контекстным контролем и снятием разрешающих аннотаций у stale пары. Raw сохранён в original_cashflow. Повторные fresh CLI дали code 2, stale_saved_confirmation, matched_pairs: 0 и исходные обороты 120.03 / 150.04. Неизменённые сохранённые и legacy same-day пары продолжают исключаться ровно раз. По совокупному diff открытых замечаний нет.
 
 ## Проверки контроллера
 
-В worktree Transfer watson повторена команда `python -m unittest discover -s tests -p test_own_transfers.py`, 13 tests OK. Исходный воспроизводитель `work/controller-03/controller-evidence-removed.json` сначала дал ошибочное очищение 20.02 / 50.03, после fix команда `match_own_transfers.py work/controller-03/controller-evidence-removed.json work/controller-03/controller-repeat-fixed.json` дала ожидаемый code2, matched_pairs0 и 120.03 / 150.04. Новый и прежний CSV-аудит проверены автором и ревьюером. Подтверждённая пара 31 января / 1 февраля сохраняет исходные даты, документы и месяцы.
+В worktree Transfer watson повторена команда `python -m unittest discover -s tests -p test_own_transfers.py`, 13 tests OK. Исходный воспроизводитель `work/controller-03/controller-evidence-removed.json` сначала дал ошибочное очищение 20.02 / 50.03, после fix команда `match_own_transfers.py work/controller-03/controller-evidence-removed.json work/controller-03/controller-repeat-fixed.json` дала ожидаемый code 2, matched_pairs: 0 и 120.03 / 150.04. Новый и прежний CSV-аудит проверены автором и ревьюером. Подтверждённая пара 31 января / 1 февраля сохраняет исходные даты, документы и месяцы.
 
 На merge `f25f5f6f0cc501416e1e642a1961f6d91205ed30` запущена `.venv/bin/python -m unittest discover -s tests`. Результат: 201 tests OK. Все критерии раскрыты в `03-implementation.md`. Python в worktree из канонической `.venv/bin/python`.
 

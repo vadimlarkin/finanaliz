@@ -8,14 +8,14 @@ Style sherlock `/root/style_sherlock`: нарушений документиро
 
 ## Spec
 
-Spec inspector `/root/spec_inspector` выявил P2: дублированный либо противоречивый контроль давал подтверждённые остатки PDF несмотря ошибку аудита. Исправлено отдельным коммитом. Свежие CLI-проверки дубликата и closing999.99 дают код 2, агрегаты null, PDF missing/null, сырые controls и причины сохранены. Ошибка только классификации сохраняет корректные банковские остатки. По совокупному diff открытых замечаний нет.
+Spec inspector `/root/spec_inspector` выявил P2: дублированный либо противоречивый контроль давал подтверждённые остатки PDF несмотря ошибку аудита. Исправлено отдельным коммитом. Свежие CLI-проверки дубликата и closing 999.99 дают код 2, агрегаты null, PDF missing/null, сырые controls и причины сохранены. Ошибка только классификации сохраняет корректные банковские остатки. По совокупному diff открытых замечаний нет.
 
 ## Проверки контроллера
 
-В дереве Cash countula повторены `python -m unittest discover -s tests -p test_calculate_cashflow.py`, 14 OK, и CLI `calculate_cashflow.py work/controller-01/controller-duplicate-controls.json work/controller-01/controller-duplicate-controls-result.json`, код 2 как ожидается, balances.issue_codes=[invalid_controls], источники и исходные controls сохранены, значения null. Воспроизводитель был запущен до fix и показал ошибочно подтверждённое открытие20.00, после fix то же входное значение не подтверждается.
+В дереве Cash countula повторены `python -m unittest discover -s tests -p test_calculate_cashflow.py`, 14 OK, и CLI `calculate_cashflow.py work/controller-01/controller-duplicate-controls.json work/controller-01/controller-duplicate-controls-result.json`, код 2 как ожидается, balances.issue_codes=[invalid_controls], источники и исходные controls сохранены, значения null. Воспроизводитель был запущен до fix и показал ошибочно подтверждённое открытие 20.00, после fix то же входное значение не подтверждается.
 
-Независимый пример даёт поступления150.47, списания22.06, изменение128.41, открытие10.00, закрытие138.41. Все критерии раскрыты в `01-implementation.md`. Расчёты Decimal, неизвестное и нерешённое сохранено.
+Независимый пример даёт поступления 150.47, списания 22.06, изменение 128.41, открытие 10.00, закрытие 138.41. Все критерии раскрыты в `01-implementation.md`. Расчёты Decimal, неизвестное и нерешённое сохранено.
 
-Синтетический PDF `work/controller-01/ip-report.pdf` отрендерен командой `pdftoppm -scale-to 1500 -png -singlefile work/controller-01/ip-report.pdf work/controller-01/ip-report-preview`. Контроллер осмотрел PNG: одна страница, текст, диаграмма и сноски читаемы, наложений/обрезки нет. Макет ИП3.2 сохранён. PDF и рабочие JSON вне Git. Python в worktree используется из канонической `.venv/bin/python`.
+Синтетический PDF `work/controller-01/ip-report.pdf` отрендерен командой `pdftoppm -scale-to 1500 -png -singlefile work/controller-01/ip-report.pdf work/controller-01/ip-report-preview`. Контроллер осмотрел PNG: одна страница, текст, диаграмма и сноски читаемы, наложений/обрезки нет. Макет ИП 3.2 сохранён. PDF и рабочие JSON вне Git. Python в worktree используется из канонической `.venv/bin/python`.
 
-На merge `d5b9ccfcc61c73889d513186890a74ab9e176ee7` команда `.venv/bin/python -m unittest discover -s tests` дала158 tests OK. Терминология перед закрытием пройдена. Сценарии поведения агента описаны и проверены чтением, отдельный модельный прогон не проводился. Полный свободный денежный поток не рассчитывается. Установка не менялась.
+На merge `d5b9ccfcc61c73889d513186890a74ab9e176ee7` команда `.venv/bin/python -m unittest discover -s tests` дала 158 tests OK. Терминология перед закрытием пройдена. Сценарии поведения агента описаны и проверены чтением, отдельный модельный прогон не проводился. Полный свободный денежный поток не рассчитывается. Установка не менялась.
