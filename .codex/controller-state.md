@@ -2,7 +2,7 @@
 
 ## Снимок и владелец
 
-Обновлено 05.11.2026, AirM5. Владелец: текущий чат-контроллер; поручение передано из чата `01a1ab96-3932-7a82-a679-fb7e4ecbbaa4`. Предыдущих владельцев этого прогона нет. Каноническая Git-копия: `/Users/vadimlarkin/Developer/finanaliz-report-composition-20261022`, origin `https://github.com/vadimlarkin/finanaliz.git`, ветка main. Исходный HEAD `1d42b5e7daa00dbdb6d2046c91b005c62ae31543`, дерево было чистым. Последняя принятая интеграция `35512caba571e56ff2b96e3bafaa34d63d1c7f3f`. Точный коммит снимка определяется Git.
+Обновлено 05.11.2026, AirM5. Владелец: текущий чат-контроллер; поручение передано из чата `01a1ab96-3932-7a82-a679-fb7e4ecbbaa4`. Предыдущих владельцев этого прогона нет. Каноническая Git-копия: `/Users/vadimlarkin/Developer/finanaliz-report-composition-20261022`, origin `https://github.com/vadimlarkin/finanaliz.git`, ветка main. Исходный HEAD `1d42b5e7daa00dbdb6d2046c91b005c62ae31543`, дерево было чистым. Последняя принятая интеграция `f25f5f6f0cc501416e1e642a1961f6d91205ed30`. Точный коммит снимка определяется Git.
 
 Основной снимок находится здесь. Общий Synology HANDOFF описывает установленную 0.1.0 и не заменяет этот снимок. Происхождение восьми тикетов: `docs/controller/provenance.md`, статусы синхронизируются с общей папкой.
 
@@ -12,7 +12,7 @@
 
 ## Очередь
 
-Принято 4/8. Ретро после третьего завершено: `docs/controller/retro-after-03.md`. Следующее ретро после 6. Для остатка прогона место исполнителя сохраняется до приёмки его задачи, включая исправления. Общие правила по ретро не менялись.
+Принято 5/8. Ретро после третьего завершено: `docs/controller/retro-after-03.md`. Следующее ретро после 6. Для остатка прогона место исполнителя сохраняется до приёмки его задачи, включая исправления. Общие правила по ретро не менялись.
 
 | Тикет | Статус | Зависимости | Следующее действие |
 | --- | --- | --- | --- |
@@ -21,7 +21,7 @@
 | 06 | completed | нет | принято и интегрировано |
 | 07 | completed | нет | принято и интегрировано |
 | 02 | changes-requested | 01 completed | Double trouble исправляет auto-транзитивность |
-| 03 | in-review | 01 completed | повторная приёмка fix3c62d9d |
+| 03 | completed | 01 completed | принято и интегрировано |
 | 04 | ready-for-agent | 01 completed | после освобождения места |
 | 08 | ready-for-agent | 02–07 | ожидать все зависимости |
 
@@ -33,10 +33,6 @@
 | --- | --- | --- | --- | --- |
 | 02 | Double trouble `/root/double_trouble` | `/Users/vadimlarkin/Developer/finanaliz-double-trouble`, `controller/02-overlap` | `66e085a4075c04e49baf482024e3437c741b9c95` | in-review, результат `f6fddc33c2e0a64d498089337aeb898c179f9d55` |
 
-Transfer watson `/root/transfer_watson`, модель inherited/unknown, running fix03 в местном `/Users/vadimlarkin/Developer/finanaliz-transfer-watson`, ветка `controller/03-own-transfers`, база `c0049205be1140e34439afa637b639d199b90224`. Может изменять check_cashflow/calculate для подтверждённых переводов с разными датами; Double trouble сохраняет эти поля и общие скрипты не меняет.
-
-03 представлен коммитом `8d53b125e2699f29d98bc316dfa46ba416a6b784`, дерево автора чистое. Контроллер повторил 12 новых CLI-тестов OK. Standards: замечаний нет. Spec P2: сохранённая пара обходила удаление объявленного источника evidence и изменение владельцев, сохраняя очищение обеих сторон. Контроллер повторил удаление PROOF. Fix `3c62d9dd37eeb926bdb251836f2243fe73a3b1f1` передан на повторную приёмку. Контроллер повторил исходный fixture: matched_pairs0 и исходные обороты сохранены. Standards повторно0, Spec выполняется; автор сообщил13 целевых/11 CSV/201 общих тестов OK. Автор сообщил 11 прежних CSV-тестов и 200 общей регрессии OK.
-
 02 представлен коммитом `f6fddc33c2e0a64d498089337aeb898c179f9d55`, дерево автора чистое, 16 целевых/188 исходной регрессии автора OK. Standards0. SpecP2: мост BANK-1 / missing / BANK-2 стирает identity_conflict внутри auto-union, включая повтор localID. Контроллер повторил16 тестов OK и обе дефектные ветки. Автор исправляет отдельным коммитом.
 
 ## Проверки и приёмка
@@ -46,6 +42,7 @@ Transfer watson `/root/transfer_watson`, модель inherited/unknown, running
 | 05 | Pdf houdini `/root/pdf_houdini` | `3e34f7e2a7419669904f2cac349dff3fa8c50027` | `4bc26102ef0fc489fb96d7fa6143912196533eed` | `docs/controller/05-acceptance.md`, 144 tests OK |
 | 01 | Cash countula `/root/cash_countula` | `90afd1e7f8e02580d747ee6348726ebce0c34d4f` | `d5b9ccfcc61c73889d513186890a74ab9e176ee7` | `docs/controller/01-acceptance.md`, 158 tests OK, PDF3.2 осмотрен |
 | 06 | Debt detective `/root/debt_detective` | `b710ca66eef7bf48415f0bb9a85d7d54ed13cae1` | `1aa40cb1fb83194df6f46f8ae4650748ea78fb6e` | `docs/controller/06-acceptance.md`, 172 tests OK |
+| 03 | Transfer watson `/root/transfer_watson` | `3c62d9dd37eeb926bdb251836f2243fe73a3b1f1` | `f25f5f6f0cc501416e1e642a1961f6d91205ed30` | `docs/controller/03-acceptance.md`, 201 tests OK |
 | 07 | Loan ranger `/root/loan_ranger` | `f552d51bee25fd59de6076832849cb7b6c92a3e2` | `35512caba571e56ff2b96e3bafaa34d63d1c7f3f` | `docs/controller/07-acceptance.md`, 188 tests OK |
 
 Ревьюеры Style sherlock `/root/style_sherlock` и Spec inspector `/root/spec_inspector` проверяют две оси относительно точных баз. Открытых блокирующих замечаний к принятым задачам нет. Один неблокирующий P3 о дублировании расчёта выручки01 отмечен в приёмке, очередь им не расширяется.
@@ -54,4 +51,4 @@ Transfer watson `/root/transfer_watson`, модель inherited/unknown, running
 
 ## Итоги, блокировки и передача
 
-Неустранимых блокировок нет. Следующее действие: принимать02/03 по готовности и после приёмки освободившегося места назначить04. После шестой приёмки остановить назначения и сохранить ретро до продолжения. Release/установка/общие правила не менялись. Незавершённых внешних операций нет; публикация main в origin ещё не выполнялась в этом прогоне.
+Неустранимых блокировок нет. Следующее действие: назначить04 в свободное место, 02 исправляет auto-конфликт. После шестой приёмки сначала ретро, уже выполняющуюся04 сохранить. После шестой приёмки остановить назначения и сохранить ретро до продолжения. Release/установка/общие правила не менялись. Незавершённых внешних операций нет; публикация main в origin ещё не выполнялась в этом прогоне.
