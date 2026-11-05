@@ -17,10 +17,10 @@
 
 | Тикет | Статус | Зависимости | Следующее действие |
 | --- | --- | --- | --- |
-| 01 | in-review | нет | Spec приёмка |
+| 01 | changes-requested | нет | Cash countula исправляет P2 controls |
 | 05 | completed | нет | принят и интегрирован, см. 05-acceptance.md |
 | 06 | in-progress | нет | Debt detective выполняет |
-| 07 | in-progress | нет | Loan ranger выполняет |
+| 07 | in-progress | нет | безопасно остановлен до кода, возобновить после 01 |
 | 02 | ready-for-agent | 01 | ожидание |
 | 03 | ready-for-agent | 01 | ожидание |
 | 04 | ready-for-agent | 01 | ожидание |
@@ -28,16 +28,15 @@
 
 ## Незавершённая работа
 
-| Тикет | Имя и ID | Worktree и ветка | База | Статус |
+Модель всех исполнителей inherited/unknown, пути местные для AirM5. Main сейчас содержит принятый 05. Рабочие деревья изолированы.
+
+| Тикет | Агент и ID | Worktree, ветка | База и результат | Статус |
 | --- | --- | --- | --- | --- |
-| 01 | Cash countula, `/root/cash_countula`, модель inherited/unknown | местный `/Users/vadimlarkin/Developer/finanaliz-cash-countula`, `controller/01-cashflow` | `e0e6c3a3a473cabf1c178d2dee0966af1e33ce67` | running |
-| 05 | Pdf houdini, `/root/pdf_houdini`, модель inherited/unknown | местный `/Users/vadimlarkin/Developer/finanaliz-pdf-houdini`, `controller/05-pdf-cache` | `e0e6c3a3a473cabf1c178d2dee0966af1e33ce67` | in-review |
+| 01 | Cash countula `/root/cash_countula` | `/Users/vadimlarkin/Developer/finanaliz-cash-countula`, `controller/01-cashflow` | база `e0e6c3a3a473cabf1c178d2dee0966af1e33ce67`, результат `c6c46c7d4d1cd8f33b9b921f4251aa0ddd54ea2a` | running, исправление P2 |
+| 06 | Debt detective `/root/debt_detective` | `/Users/vadimlarkin/Developer/finanaliz-debt-detective`, `controller/06-debt-register` | база `608d1d95f5c7655a42143538e2eac1778d3b9ac2` | running |
+| 07 | Loan ranger `/root/loan_ranger` | `/Users/vadimlarkin/Developer/finanaliz-loan-ranger`, `controller/07-loan-schedule` | база `e9c487d56ebd13d29d08229381bb2adaa3c06333`, дерево чистое | stopped до первого теста/кода, сохранить и возобновить после 01 |
 
-Debt detective `/root/debt_detective`, модель inherited/unknown, читает 06 в местном `/Users/vadimlarkin/Developer/finanaliz-debt-detective`, ветка `controller/06-debt-register`, база `608d1d95f5c7655a42143538e2eac1778d3b9ac2`. После исправления 05 возобновлён, running.
-
-01 представлен коммитом `c6c46c7d4d1cd8f33b9b921f4251aa0ddd54ea2a`, Spec inspector проверяет требования; Standards нарушений нет, одна неблокирующая эвристика повторения расчёта выручки. Контроллер повторил 13 тестов OK и визуально осмотрел синтетический PDF 3.2 без дефектов.
-
-Loan ranger `/root/loan_ranger`, модель inherited/unknown, running07 в местном `/Users/vadimlarkin/Developer/finanaliz-loan-ranger`, ветка `controller/07-loan-schedule`, база `e9c487d56ebd13d29d08229381bb2adaa3c06333`.
+01 Spec inspector `/root/spec_inspector` нашёл P2: ошибочные/дублированные controls дают подтверждённые остатки PDF несмотря audit error. Контроллер воспроизвёл duplicate controls. Standards Style sherlock `/root/style_sherlock`: нарушений нет, P3 эвристика дублирования расчёта revenue. 13 исходных CLI тестов OK. Синтетический PDF 3.2 отрендерен и осмотрен, без дефектов. Приёмка ожидает fix.
 
 ## Проверки и приёмка
 
@@ -45,4 +44,4 @@ Loan ranger `/root/loan_ranger`, модель inherited/unknown, running07 в м
 
 ## Итоги, блокировки и передача
 
-Тикеты скопированы из общей папки без изменения. Неустранимых блокировок нет. Следующее действие: принять 01 и назначить независимый 07 второму исполнителю. Происхождение тикетов: `docs/controller/provenance.md`.
+Тикеты скопированы из общей папки без изменения. Неустранимых блокировок нет. Следующее действие: повторная приёмка исправления 01, затем возобновление 07. Новые назначения ожидать до освобождения исполнителя; после третьей приёмки сначала ретро. Происхождение тикетов: `docs/controller/provenance.md`.
